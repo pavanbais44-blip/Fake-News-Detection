@@ -1,22 +1,30 @@
-# Use highly optimized uv image
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 WORKDIR /app
 
-# Enable bytecode compilation
+# ⚙️ Set Python and UV Environments
 ENV UV_COMPILE_BYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
-# Copy project files
-COPY pyproject.toml uv.lock ./
+# 🛠️ Install OS Dependencies (for newspaper3k/lxml)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libxml2-dev \
+    libxslt-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies into the container
+# 📦 Dependency Sync
+COPY pyproject.toml uv.lock* ./
 RUN uv sync --frozen --no-dev
 
-# Copy the rest of the application
-COPY app ./app
+# 📥 Pre-fetch Neural & Lexical Data
+RUN uv run python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('stopwords')"
 
-# Expose FastAPI port
+# 🏁 Final Code Injection
+COPY . .
+
 EXPOSE 8000
 
-# Run the project using uv
-CMD ["uv", "run", "python", "-m", "app.main"]
+# 🚀 Launch Agentic Lab
+CMD ["uv", "run", "python", "app.py"]

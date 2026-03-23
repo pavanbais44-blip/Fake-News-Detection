@@ -10,6 +10,9 @@
 **/*.py[cod]
 **/*.pkl
 **/*.log
+backend/feedback_db.json
+backend/models/
+backend/training_data/
 
 # Environment artifacts
 **/.venv/
