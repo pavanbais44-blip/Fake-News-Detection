@@ -44,10 +44,32 @@ def home():
 from fastapi.concurrency import run_in_threadpool
 
 from modules.feedback_engine import feedback_engine
+from modules.generator import misinfo_generator
+from modules.evaluation import evaluation_engine
 
 class FeedbackRequest(BaseModel):
     text: str
     label: str
+
+class GenerateRequest(BaseModel):
+    text: str
+
+class EvaluationItem(BaseModel):
+    text: str
+    label: str
+
+@app.post("/generate_fake")
+async def create_fake(request: GenerateRequest):
+    """Generates synthetic misinformation for demo purposes."""
+    fake_text = misinfo_generator.generate(request.text)
+    return {"original": request.text, "synthetic_fake": fake_text}
+
+@app.post("/evaluate")
+async def run_eval(dataset: List[EvaluationItem]):
+    """Batch evaluation logic for Upgrade 15."""
+    data_list = [{"text": i.text, "label": i.label} for i in dataset]
+    res = await evaluation_engine.run_benchmark(data_list)
+    return res
 
 @app.post("/feedback")
 async def save_feedback(request: FeedbackRequest):

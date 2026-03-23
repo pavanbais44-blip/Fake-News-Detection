@@ -36,3 +36,16 @@ export const submitFeedback = async (text, label) => {
     throw error;
   }
 };
+export const generateFake = async (text) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/generate_fake`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Generation Error:', error);
+    throw error;
+  }
+};

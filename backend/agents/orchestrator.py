@@ -9,6 +9,8 @@ from agents.bias_agent import BiasAgent
 from agents.reflection_agent import ReflectionAgent
 from modules.credibility import credibility_module
 from modules.feedback_engine import feedback_engine
+from modules.debate import debate_arena
+from modules.temporal import temporal_module
 
 class Orchestrator:
     """The central coordinator that manages the upgraded agentic pipeline execution."""
@@ -51,6 +53,18 @@ class Orchestrator:
             credibility_score=cred_data['credibility_score']
         )
         
+        # 🟢 PHASE 5: ADVANCED FORENSICS (UPGRADE 1 & 3)
+        # Multi-Agent Debate System
+        debate_data = debate_arena.run_debate(
+             supporting=evidence_data['supporting'], 
+             contradicting=evidence_data['contradicting'],
+             bert_score=evidence_data['bert_score'],
+             patterns=evidence_data['patterns']['patterns_found']
+        )
+        # Temporal Awareness
+        full_text_dump = " ".join([a.get('text', '') for a in scraper_data.get('evidence_articles', [])])
+        temporal_res = temporal_module.analyze_temporal(full_text_dump)
+        
         # --- 🔁 AGENTIC RETRY LOGIC (Self-Correction) ---
         retried = False
         if reflection_data['action'] == "retry":
@@ -90,10 +104,22 @@ class Orchestrator:
         final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost
         truth_score = max(0.0, min(1.0, float(final_score)))
         
-        # Determine Verdict early for synthesis
+        # Determine Verdict
         final_verdict = "Suspicious"
         if truth_score >= 0.6: final_verdict = "Real"
         elif truth_score < 0.4: final_verdict = "Fake"
+        
+        # 🟢 UPGRADE 10: Risk Classification
+        risk_level = temporal_module.classify_risk(truth_score, evidence_data['patterns']['patterns_found'])
+        
+        # 🟢 UPGRADE 6: "What If I'm Wrong?" (Uncertainty Awareness)
+        counter_points = []
+        if truth_score < 0.5:
+             counter_points.append("Verdict assumes found news articles accurately describe reality.")
+             counter_points.append("If this is a developing situation, older contradictions may be outdated.")
+        else:
+             counter_points.append("Corroboration might be based on echoing of a single unverified source.")
+             counter_points.append("Lack of contradictory evidence does not prove absolute truth.")
         
         # --- 🧪 EXPLAINABILITY REASONS ---
         explanation = []
@@ -125,8 +151,13 @@ class Orchestrator:
             "truth_score": float(truth_score),
             "confidence": reflection_data['confidence'],
             "final_verdict": final_verdict,
+            "risk_level": risk_level,
             "explanation": explanation[:3],
             "neural_synthesis": synthesis,
+            "debate": debate_data,
+            "temporal": temporal_res,
+            "counter_points": counter_points,
+            "decomposed_claims": claim_data['decomposed_claims'],
             "metadata": {
                 "entities": claim_data['entities'],
                 "keywords": claim_data['keywords'],

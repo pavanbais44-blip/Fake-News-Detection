@@ -111,6 +111,49 @@ textarea:focus, input:focus { outline: none; }
 input:checked + .slider { background-color: var(--accent-primary); }
 input:checked + .slider:before { transform: translateX(16px); background-color: white; }
 
+/* --- 📊 NEURAL DEBATE ARENA --- */
+.debate-arena { margin-top: 4rem; padding: 2rem; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); border-radius: 20px; }
+.debate-header { font-size: 0.75rem; font-weight: 950; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 2rem; text-align: center; text-transform: uppercase; }
+.debate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; position: relative; }
+.debate-grid::after { content: "VS"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; font-weight: 950; color: var(--border-color); background: var(--bg-dark); padding: 5px; border-radius: 50%; border: 1px solid var(--border-color); }
+.debate-card { padding: 1.5rem; border-radius: 14px; border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.01); }
+.debate-card label { display: block; font-size: 0.65rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: 1px; }
+.debate-card.alpha label { color: var(--real); }
+.debate-card.omega label { color: var(--fake); }
+.debate-card p { font-size: 0.85rem; line-height: 1.6; color: var(--text-primary); }
+.judge-box { margin-top: 2rem; padding: 1rem; text-align: center; font-size: 0.8rem; font-weight: 900; color: var(--accent-primary); border-top: 1px dashed var(--border-color); }
+
+/* --- 🧊 DECOMPOSITION & UNCERTAINTY --- */
+.decomposition-section { margin-top: 4rem; }
+.decomposition-section h3 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.5rem; letter-spacing: 1px; text-transform: uppercase; }
+.claim-list { display: flex; flex-direction: column; gap: 10px; }
+.claim-pill { padding: 12px 20px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; font-size: 0.8rem; color: #94a3b8; font-weight: 800; }
+
+.uncertainty-box { margin-top: 4rem; padding: 2rem; border: 1px solid rgba(245, 158, 11, 0.1); background: rgba(245, 158, 11, 0.02); border-radius: 20px; }
+.u-header { font-size: 0.75rem; font-weight: 950; color: var(--suspicious); margin-bottom: 1.5rem; letter-spacing: 1px; text-transform: uppercase; }
+.uncertainty-box ul { padding-left: 1.2rem; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.uncertainty-box li { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+
+/* --- 🧬 SYNTHETIC LAB BTN --- */
+.action-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+.gen-fake-btn { padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); background: rgba(168, 85, 247, 0.05); color: var(--accent-secondary); font-weight: 950; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; }
+.gen-fake-btn:hover:not(:disabled) { background: rgba(168, 85, 247, 0.1); transform: translateY(-2px); border-color: var(--accent-secondary); }
+.gen-fake-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- 🔍 TOOL VIZ --- */
+.tool-viz { margin-top: 4rem; padding: 1.5rem; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); border-radius: 16px; }
+.tool-viz h3 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+.trace-row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
+.trace-item { display: flex; align-items: center; gap: 8px; padding: 8px 15px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 10px; white-space: nowrap; }
+.t-name { font-size: 0.7rem; font-weight: 900; color: var(--text-primary); }
+.t-status { font-size: 0.6rem; color: var(--real); animation: pulse 2s infinite; }
+
+.h-guard { font-weight: 900; color: var(--real); letter-spacing: 1px; animation: pulse 2s infinite; }
+.report-id { display: flex; align-items: center; gap: 1rem; }
+
+/* Existing Animations */
+@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
 /* --- 🛠️ NEURAL CALIBRATION --- */
 .calibration-section { margin-top: 6rem; padding: 2.5rem; background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--border-color); border-radius: 20px; text-align: center; }
 .calibration-section h4 { font-size: 0.8rem; font-weight: 900; letter-spacing: 2px; color: var(--text-primary); margin-bottom: 0.5rem; text-transform: uppercase; }
@@ -120,4 +163,3 @@ input:checked + .slider:before { transform: translateX(16px); background-color: 
 .c-btn.real:hover { color: var(--real); border-color: var(--real); background: rgba(16, 185, 129, 0.05); }
 .c-btn.fake:hover { color: var(--fake); border-color: var(--fake); background: rgba(244, 63, 94, 0.05); }
 .c-success { color: var(--accent-primary); font-size: 0.8rem; font-weight: 950; letter-spacing: 2px; padding: 1rem; animation: pulse 2s infinite; }
-@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }

@@ -8,10 +8,18 @@ class WebAgent:
     @staticmethod
     async def get_links(keywords: List[str], entities: List[str], retrying: bool = False) -> Dict[str, Any]:
         """Generates 2–3 optimized queries and calls the search tool."""
-        # 1. Base Query from keywords
-        base_query = " ".join(entities[:3] + keywords[:2]) + " official news"
         
-        # 2. Fact-check Query
+        # 🟢 UPGRADE 11: Context Expansion (Smart Query Expansion)
+        # If the input is too vague, expand the context automatically
+        working_keywords = list(keywords)
+        if len(working_keywords) < 3:
+             # Expanding vague claim "India deal" → "India international trade deal news"
+             working_keywords.extend(["official report", "fact check", "investigation"])
+        
+        # 1. Base Query from keywords
+        base_query = " ".join(entities[:3] + working_keywords[:2]) + " official news"
+        
+        # ... queries
         fact_query = " ".join(entities[:2]) + " fact check"
 
         # 3. Multi-language (Hindi/Regional) Query

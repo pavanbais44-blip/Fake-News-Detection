@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import { analyzeNews, submitFeedback } from './services/api';
+import { analyzeNews, submitFeedback, generateFake } from './services/api';
 
 function App() {
   const [inputText, setInputText] = useState('');
@@ -10,11 +10,12 @@ function App() {
   const [activeStep, setActiveStep] = useState(0);
   const [deepAnalysis, setDeepAnalysis] = useState(true);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem('tg_history');
     return saved ? JSON.parse(saved) : [];
   });
-
+  
   const steps = [
     "ISOLATING CLAIM ENTITIES",
     "CROSS-REFERENCING GLOBAL DATABASES",
@@ -53,6 +54,19 @@ function App() {
     } catch (error) {
       setLoading(false);
       alert("Neural Lab Connection Failed.");
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!inputText) return;
+    setIsGenerating(true);
+    try {
+      const data = await generateFake(inputText);
+      setInputText(data.synthetic_fake);
+      setIsGenerating(false);
+    } catch (e) {
+      setIsGenerating(false);
+      alert("Calibration Error.");
     }
   };
 
@@ -104,7 +118,12 @@ function App() {
                     <input type="url" placeholder="Enter article URL..." value={inputText} onChange={(e) => setInputText(e.target.value)} />
                   )}
                </div>
-               <button className="main-scan-btn" onClick={handleScan}>RUN FORENSIC ANALYSIS</button>
+               <div className="action-row">
+                  <button className="main-scan-btn" onClick={handleScan}>RUN FORENSIC ANALYSIS</button>
+                  <button className="gen-fake-btn" onClick={handleGenerate} disabled={isGenerating}>
+                     {isGenerating ? "GENERATING..." : "SYNTHETIC LAB 🧪"}
+                  </button>
+               </div>
             </div>
           </section>
         )}
@@ -130,11 +149,12 @@ function App() {
           <section className="report-layout animate-in">
             <div className="report-header">
                <button className="back-btn" onClick={() => setResult(null)}>← NEW INVESTIGATION</button>
-               <div className="report-id">REPORT ID: #{Math.random().toString(36).substring(7).toUpperCase()}</div>
+               <div className="report-id">REPORT ID: #{Math.random().toString(36).substring(7).toUpperCase()} | <span className="h-guard">HALLUCINATION GUARD: {result.confidence === 'high' ? 'PASSED' : 'CAUTION'}</span></div>
             </div>
 
+            {/* MAIN VERDICT CARD */}
             <div className={`verdict-banner ${result.final_verdict.toLowerCase()}`}>
-               <div className="v-label">NEURAL VERDICT</div>
+               <div className="v-label">NEURAL VERDICT - {result.risk_level}</div>
                <div className="v-status">{result.final_verdict.toUpperCase()}</div>
                <div className="v-trust">
                   <span>TRUTH SCORE: {Math.round(result.truth_score * 100)}%</span>
@@ -147,21 +167,60 @@ function App() {
                <p className="narrative-text">"{result.neural_synthesis}"</p>
             </div>
 
+            {/* NEURAL DEBATE ARENA (UPGRADE 1) */}
+            <div className="debate-arena">
+               <div className="debate-header">Neural Argumentative Cross-Examination</div>
+               <div className="debate-grid">
+                  <div className="debate-card alpha">
+                     <label>AGENT ALPHA (REAL-ARGUE)</label>
+                     <p>{result.debate?.real_argument}</p>
+                  </div>
+                  <div className="debate-card omega">
+                     <label>AGENT OMEGA (FAKE-ARGUE)</label>
+                     <p>{result.debate?.fake_argument}</p>
+                  </div>
+               </div>
+               <div className="judge-box">JUDGE RATIONALE: {result.debate?.judge_rationale}</div>
+            </div>
+
+            {/* TOOL USAGE FLOW (UPGRADE 13) */}
+            <div className="tool-viz">
+               <h3>Pipeline Execution Trace</h3>
+               <div className="trace-row">
+                  {result.details.agent_activities?.map((a, i) => (
+                    <div key={i} className="trace-item">
+                       <span className="t-name">{a.agent}</span>
+                       <span className="t-status">●</span>
+                    </div>
+                  ))}
+               </div>
+            </div>
+
             <div className="stats-grid">
                <div className="stat-card">
                   <label>NEURAL ACCURACY</label>
                   <div className="val">{Math.round(result.details.bert_score * 100)}%</div>
-                  <div className="sub">Patterns consistent with {result.final_verdict === 'Real' ? 'Fact' : 'Propaganda'}</div>
+                  <div className="sub">Consistent with {result.final_verdict === 'Real' ? 'Fact' : 'Propaganda'}</div>
                </div>
                <div className="stat-card">
                   <label>EVIDENCE DENSITY</label>
                   <div className="val">{result.details.supporting}</div>
-                  <div className="sub">Trusted supporting sources found</div>
+                  <div className="sub">Trusted news sources found</div>
                </div>
                <div className="stat-card">
                   <label>BIAS INTENSITY</label>
                   <div className="val neg">{Math.round(result.details.bias_penalty * 100)}%</div>
                   <div className="sub">Neural subjectivity penalty</div>
+               </div>
+            </div>
+
+            {/* ATOMIC CLAIM DECOMPOSITION (UPGRADE 2) */}
+            <div className="decomposition-section">
+               <h3>Atomic Claim Verification</h3>
+               <div className="claim-list">
+                  {result.decomposed_claims?.map((c, i) => (
+                    <div key={i} className="claim-pill">CLAIM {i+1}: {c.text}</div>
+                  ))}
                </div>
             </div>
 
@@ -190,13 +249,22 @@ function App() {
                   </div>
                </div>
                <div className="meta-box">
-                  <label>IDENTIFIED ENTITIES</label>
+                  <label>RELATIONAL ENTITIES (GRAPH)</label>
                   <div className="chips">
                     {result.metadata?.entities.map((e, i) => <span key={i} className="badge trust">{e}</span>)}
                   </div>
                </div>
             </div>
 
+            {/* UNCERTAINTY AWARENESS (UPGRADE 6) */}
+            <div className="uncertainty-box">
+               <div className="u-header">What If We're Wrong? (Self-Reflection)</div>
+               <ul>
+                  {result.counter_points?.map((p, i) => <li key={i}>{p}</li>)}
+               </ul>
+            </div>
+
+            {/* NEURAL CALIBRATION */}
             <div className={`calibration-section ${feedbackSent ? 'sent' : ''}`}>
                <div className="c-info">
                   <h4>Neural Calibration Hub</h4>
