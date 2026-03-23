@@ -20,9 +20,11 @@ Everything in this project is built using free, open-source tools—requiring **
 - **Hosting (Free):** Vercel or GitHub Pages.
 
 ### Backend (Server-Side)
-- **Framework:** FastAPI (Python) - asynchronous and highly performant.
+- **Runtime:** Python 3.12+ (Optimized via **uv** package manager)
+- **Framework:** FastAPI - asynchronous and highly performant.
 - **Scraping:** BeautifulSoup4 & Newspaper3k (Free web scraping).
-- **Hosting (Free):** Render, Pythonanywhere, or Hugging Face Spaces.
+- **Inference:** BERT Transformers (Hugging Face).
+- **Execution:** `uv run app.py` (Blazing fast startup & automatic dependency management).
 
 ### Machine Learning (The Core)
 - **Language:** Python 3.10+
