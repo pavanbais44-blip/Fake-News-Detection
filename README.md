@@ -1,66 +1,61 @@
-# 🛡️ TruthGuard: Hybrid BERT-Powered Truth Engine
+# 🛡️ TruthGuard 2.0: Agentic Misinformation Forensics Lab
 
-![TruthGuard Banner](https://img.shields.io/badge/Status-Production--Ready-brightgreen) ![License](https://img.shields.io/badge/License-MIT-green) ![Engine](https://img.shields.io/badge/Intelligence-BERT_Neural_Net-blue) ![Performance](https://img.shields.io/badge/Speed-Optimized_via_uv-orange)
+![TruthGuard Banner](https://img.shields.io/badge/Status-Production--Ready-brightgreen) ![License](https://img.shields.io/badge/License-MIT-green) ![Engine](https://img.shields.io/badge/Architecture-Multi--Agent_System-blueviolet) ![Performance](https://img.shields.io/badge/Speed-Optimized_via_uv-orange)
 
 ## 📌 Project Overview
-TruthGuard is a state-of-the-art **Fake News Identification Platform** that combines **Deep Learning (BERT)** with **Real-Time Global Verification**. Unlike standard classifiers that only look at word patterns, TruthGuard "understands" the context of news articles and crawls live news databases to find supporting evidence.
+TruthGuard 2.0 is a decentralized, **Multi-Agent Forensic Laboratory** designed for the professional-grade detection and analysis of digital disinformation. Unlike standard AI classifiers, TruthGuard 2.0 doesn't just "guess"; it **investigates**. 
 
-Developed as a high-performance final-year project, it offers a professional-grade solution to the problem of digital misinformation.
+The system employs a team of specialized AI agents that collaborate, debate, and cross-reference live global evidence to reach a high-fidelity "Neural Verdict." It is built to detect not just fake news, but also **stale news recycled as current events**, **stylistic manipulation**, and **contextual hallucinations**.
 
 ---
 
-## ✨ Core Intelligent Features
+## 🧠 Phase 3: Agentic Architecture (The Intelligence Hub)
 
-### 🧠 1. BERT Neural Scan (Contextual Analysis)
-Instead of simple word counts, TruthGuard uses an **Advanced Transformer (BERT)** model to analyze the linguistic DNA of an article. It can detect:
-*   **Manipulation Patterns:** Phrases and structures common in propaganda.
-*   **Contextual Sarcasm:** Identifying ironical or satirical tones.
-*   **Nuanced Disinformation:** Catching subtle lies that traditional models miss.
+TruthGuard 2.0 utilizes a **Decentralized Multi-Agent Workflow** where each component has a specific forensic task:
 
-### 📡 2. Live Cross-Reference (The "Ground Truth" Layer)
-TruthGuard doesn't work in a vacuum. When you scan a claim, the engine:
-1.  Extracts core keywords (Nouns/Verbs).
-2.  Searches global news databases via **DuckDuckGo** in real-time.
-3.  Cross-references your input with **Verified News Sources** (BBC, Reuters, AP, etc.).
-4.  Provides a **"Verification Boost"** if the story is confirmed by official reporting.
+### 🎭 1. Neural Debate Arena (`ALPHA` vs `OMEGA`)
+The final verdict is reached through an adversarial cross-examination. **Agent ALPHA** argues for the "Real" case, while **Agent OMEGA** focuses on finding disinformation patterns. A **Chief Justice Agent** then weighs the conflicting arguments to provide a transparent, critical-thinking rationale.
 
-### ⚖️ 3. Neural Sentiment & Bias Meter
-Misinformation is often highly emotional. TruthGuard uses a specialized **Sentiment BERT** to measure:
-*   **Polarity:** Is the tone intensely positive or aggressive?
-*   **Subjectivity/Bias:** Does the article read like a fact or a heavily biased opinion?
+### 🧊 2. Atomic Claim Decomposition
+Instead of analyzing a broad paragraph, the `ClaimAgent` breaks complex text into **atomic sub-claims**. Each claim is verified individually against global news databases, ensuring that partial truths don't hide bigger lies.
+
+### 🕰️ 3. Temporal Awareness & Staleness Detection
+Fake news often uses real footage or articles from years ago and presents them as "Breaking News." Our `TemporalModule` detects date-stamps in evidence and flags news older than 2 years as **"Suspiciously Stale."**
+
+### 🧪 4. Synthetic Misinformation Lab (RESEARCH ONLY)
+A built-in **Disinformation Generator** allows researchers to transform real news into "Propaganda-styled" samples to test the system's pattern-recognition robustness.
 
 ---
 
 ## 🛠️ Modern Tech Stack
 
-### Backend (The Intelligence Hub)
-*   **Runtime:** Python 3.12+ managed by **[uv](https://github.com/astral-sh/uv)** (Blazing fast local environment).
-*   **API:** FastAPI (Asynchronous & type-safe).
-*   **AI Models:** 
-    *   `bert-tiny-finetuned-fake-news-detection` (Efficient context classifier).
-    *   `distilbert-base-uncased-finetuned-sst-2-english` (Advanced sentiment).
-*   **Scraping:** Newspaper3k & BeautifulSoup4.
+### Backend (The Forensic Core)
+*   **Runtime:** Python 3.13 managed by **[uv](https://github.com/astral-sh/uv)**.
+*   **Orchestration:** Custom `Orchestrator` managing concurrent `asyncio` agent tasks.
+*   **Intelligence:** Hybrid Transformer models (`BERT`, `DistilBERT`) + Scikit-Learn.
+*   **Scraping:** Newspaper3k + BeautifulSoup4 with high-speed threadpooling.
+*   **Experience Engine:** Persistent `Tfidf` memory of past human-in-the-loop corrections.
 
-### Frontend (The Dashboard)
-*   **Framework:** React 18+ (Vite) for a logic-heavy, lightning-fast UI.
-*   **Design:** Premium Glassmorphic / Bento-Grid layout with vanilla CSS animations.
-*   **Visuals:** Real-time circular trust meters and dynamic bias charts.
+### Frontend (The Research Dashboard)
+*   **Framework:** React 18+ (Vite) with a clinical, dark industrial theme.
+*   **UI/UX:** Real-time "Execution Trace" showing agent activities, neural trust meters, and adversarial argument cards.
+*   **State:** Custom hooks for live-scanning states and investigation history.
 
 ---
 
-## 🚀 Instant Setup Guide
+## 🚀 Professional Setup Guide
 
 ### 1. Prerequisites
-Ensure you have **Python 3.12+** and **Node.js** installed.
-You must also have **uv** installed (`pip install uv`).
+*   **Python 3.12+** & **Node.js 18+**.
+*   Install **uv** for blazing fast backend performance: `pip install uv`.
 
 ### 2. Launch the Backend
 ```powershell
 cd backend
 uv sync
-uv run app.py
+uv run python -m app
 ```
-*(On first run, the system will download ~100MB of BERT neural weights—this only happens once!)*
+*(On first run, the system will download the BERT neural weights—this only happens once!)*
 
 ### 3. Launch the Frontend
 ```powershell
@@ -71,11 +66,8 @@ npm run dev
 
 ---
 
-## 🔗 Architecture Logic
-The "Truth Score" is calculated using a **Weighted Hybrid Formula**:
-Score = (BERT_Score * 0.7) + (Live_Evidence_Boost * 0.3) - Subjectivity_Penalty
-
-This ensures that even if a stylistic pattern looks "Real," the absence of global news coverage for a major claim will still result in a **"Suspicious"** or **"High-Risk"** alert.
+## 📊 Scientific Accuracy (Evaluation Mode)
+TruthGuard 2.0 includes a **Benchmark System** (Upgrade 15) to scientifically measure Precision, Recall, and Accuracy. Developers can upload a labeled dataset to the `/evaluate` endpoint to see exactly how the multi-agent system performs against real-world misinformation.
 
 ---
-*Developed for excellence. Built for Truth.*
+*Built for the Truth. Engineered for the Future.*

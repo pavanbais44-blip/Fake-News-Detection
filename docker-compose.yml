@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Python Agentic Backend Cluster
+  # 🧠 TruthGuard Agentic Backend
   truthguard-backend:
     build: 
       context: ./backend
@@ -10,12 +10,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/data:/app/data
+      # 💾 Neural Experience Persistence (Human corrections saved here)
+      - ./backend/feedback_db.json:/app/feedback_db.json
     environment:
+      - PYTHONUNBUFFERED=1
       - ENV=production
     restart: always
 
-  # React Production Frontend (Serving via Nginx)
+  # 📑 TruthGuard Forensic Lab Frontend
   truthguard-frontend:
     build: 
       context: ./frontend
@@ -26,3 +28,8 @@ services:
     depends_on:
       - truthguard-backend
     restart: always
+
+volumes:
+  # Named volumes for caching transformer weights
+  bert_models:
+  nltk_data:

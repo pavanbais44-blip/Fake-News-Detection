@@ -9,8 +9,7 @@ nltk
 joblib
 textblob
 lxml_html_clean
-ddgs
+duckduckgo-search
 transformers
 torch
 scipy
-
