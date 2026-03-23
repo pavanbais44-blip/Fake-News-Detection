@@ -117,21 +117,102 @@ textarea:focus, .url-input:focus { background: white; outline: none; box-shadow:
 .bias-meter-container { margin-top: 0.5rem; }
 .meter-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; letter-spacing: 1px; }
 .meter { height: 10px; background: #f1f5f9; border-radius: 100px; overflow: hidden; position: relative; }
-.meter-fill { height: 100%; border-radius: 100px; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+/* --- 🏛️ BENTO GRID LAYOUT --- */
+.result-section {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+}
 
-.news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-.news-card { background: #f8fafc; border-radius: 28px; padding: 2rem; border: 2px solid transparent; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; text-decoration: none; }
-.news-card:hover { background: white; border-color: var(--accent-primary); transform: translateY(-5px); box-shadow: var(--shadow-float); }
-.news-card h4 { margin: 0 0 1rem 0; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
-.news-card p { font-size: 0.95rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 1.5rem; }
-.read-more { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: var(--accent-primary); letter-spacing: 1.5px; margin-top: auto; }
+.bento-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bento-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.3); }
+
+.bento-score { grid-column: span 4; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.bento-reasons { grid-column: span 8; }
+.bento-related { grid-column: span 12; }
+
+/* --- ✍️ NEURAL SYNTHESIS --- */
+.synthesis-text { 
+  background: rgba(99, 102, 241, 0.1); 
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+}
+.synthesis-text p { 
+  margin: 0; 
+  font-size: 1.05rem; 
+  line-height: 1.6; 
+  color: #e2e8f0; 
+  font-weight: 500;
+  font-style: italic;
+}
+.reason-divider {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.reason-divider::after { content: ''; flex-grow: 1; height: 1px; background: rgba(255,255,255,0.05); }
+
+/* --- 📝 REASON LIST --- */
+.reason-list { list-style: none; padding: 0.5rem 0; margin: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+.reason-item { display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.1); padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.95rem; border-left: 3px solid var(--accent-primary); }
+
+/* --- 🚦 NEURAL TERMINAL --- */
+.neural-terminal { margin-top: 1.5rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); background: #0a0a0c; font-family: 'JetBrains Mono', 'Courier New', monospace; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+.terminal-header { background: #1a1a1f; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.terminal-title { margin-left: 10px; font-size: 0.7rem; color: #64748b; font-weight: 600; letter-spacing: 1px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+.terminal-body { padding: 1rem; display: flex; flex-direction: column; gap: 8px; }
+.log-line { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; transition: opacity 0.3s ease; }
+.log-line.active { color: #f59e0b; opacity: 1; }
+.log-line.done { color: #10b981; opacity: 0.8; }
+.log-line.pending { color: #475569; opacity: 0.5; }
+.status-icon { font-size: 0.9rem; width: 15px; text-align: center; }
+
+/* --- 🏷️ BADGES --- */
+.score-badge { display: inline-block; padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; margin-top: 15px; text-transform: uppercase; }
+.score-badge.real { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+.score-badge.fake { background: rgba(244, 63, 94, 0.2); color: #f43f5e; border: 1px solid #f43f5e; }
+.score-badge.suspicious { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+
+.confidence-label { margin-top: 10px; font-size: 0.8rem; color: #94a3b8; }
+.confidence-label span { font-weight: 600; color: #fff; text-transform: uppercase; }
+
+.bias-meter { height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 100px; overflow: hidden; margin-top: 10px; }
+.meter-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); border-radius: 100px; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1rem; }
+.news-card { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 1.5rem; border: 1px solid transparent; transition: all 0.3s ease; display: flex; flex-direction: column; text-decoration: none; }
+.news-card:hover { border-color: var(--accent-primary); transform: translateY(-5px); background: rgba(0, 0, 0, 0.3); }
+.news-card h4 { margin: 0 0 0.8rem 0; font-size: 1.1rem; color: #fff; line-height: 1.4; }
+.news-card p { font-size: 0.9rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1; }
+.read-more { font-weight: 700; font-size: 0.75rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px; }
 
 /* Animations */
 .animate-in { animation: bentoScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes bentoScale { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
 @media (max-width: 1024px) {
-  .main-content, .result-section { grid-template-columns: 1fr; }
-  .bento-card, .bento-insight, .bento-score, .bento-domain, .bento-flags { grid-column: span 1; }
+  .result-section { grid-template-columns: 1fr; }
+  .bento-score, .bento-reasons, .bento-related { grid-column: span 1; }
   .news-grid { grid-template-columns: 1fr; }
 }
