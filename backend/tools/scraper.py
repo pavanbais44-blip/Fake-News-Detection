@@ -1,15 +1,15 @@
 from newspaper import Article
+from functools import lru_cache
 from typing import Dict, Any, List
 from fastapi.concurrency import run_in_threadpool
-from functools import lru_cache
 
-class ScraperAgent:
-    """Agent responsible for extracting clean text content from URLs."""
+class ScraperTool:
+    """Tool for clean extraction of news content from URLs."""
     
-    @lru_cache(maxsize=100)
+    @lru_cache(maxsize=150)
     @staticmethod
-    def _extract_text(url: str) -> Dict[str, str]:
-        """Core sync extraction logic using Newspaper3k."""
+    def _extract(url: str) -> Dict[str, str]:
+        """Synchronous core extraction."""
         try:
             article = Article(url, browser_user_agent='Mozilla/5.0', request_timeout=15)
             article.download()
@@ -29,18 +29,14 @@ class ScraperAgent:
             }
 
     @staticmethod
-    async def process_batch(urls: List[str]) -> Dict[str, Any]:
-        """Processes multiple URLs concurrently using threadpools."""
-        # Limit to top 5 evidence urls per requirements
-        urls = urls[:5]
-        
-        results = []
+    async def extract_batch(urls: List[str]) -> List[Dict[str, str]]:
+        """Wraps sync extraction in threadpool for async batch processing."""
+        res_list = []
         for url in urls:
-            res = await run_in_threadpool(ScraperAgent._extract_text, url)
+            res = await run_in_threadpool(ScraperTool._extract, url)
             if res.get('status') == 'success' and res.get('text'):
-                results.append(res)
-        
-        return {
-            "evidence_count": len(results),
-            "evidence_articles": results
-        }
+                res_list.append(res)
+        return res_list
+
+# Global Instance
+scraper_tool = ScraperTool()
