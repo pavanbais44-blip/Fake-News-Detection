@@ -41,6 +41,20 @@ orch = Orchestrator()
 def home():
     return {"status": "TruthGuard Agentic 2.0 Active"}
 
+from fastapi.concurrency import run_in_threadpool
+
+from modules.feedback_engine import feedback_engine
+
+class FeedbackRequest(BaseModel):
+    text: str
+    label: str
+
+@app.post("/feedback")
+async def save_feedback(request: FeedbackRequest):
+    """Saves human correction to the experience engine."""
+    feedback_engine.save_correction(request.text, request.label)
+    return {"status": "Success", "message": "Neural Engine has learned from this correction."}
+
 @app.post("/analyze")
 async def analyze_claim(request: AnalyzeRequest):
     """Entry point for the production-grade agentic pipeline."""
@@ -50,10 +64,13 @@ async def analyze_claim(request: AnalyzeRequest):
     # 🔗 URL to Text Conversion (if needed)
     target_text = request.text
     if request.url and not target_text:
-         res = await scraper_tool._extract(request.url)
-         target_text = res.get('text', '')
-         if not target_text:
-              raise HTTPException(status_code=400, detail="Failed to extract text from URL.")
+         try:
+             res = await run_in_threadpool(scraper_tool._extract, request.url)
+             target_text = res.get('text', '')
+             if not target_text:
+                  raise HTTPException(status_code=400, detail="Failed to extract text from URL. The page may be protected or empty.")
+         except Exception as e:
+             raise HTTPException(status_code=500, detail=f"Scraper Error: {str(e)}")
 
     # 🚀 Start Multi-Agent Search, Scrape & Classification
     try:

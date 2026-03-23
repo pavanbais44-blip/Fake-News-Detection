@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import { analyzeNews } from './services/api';
-import BentoCard from './components/BentoCard';
+import { analyzeNews, submitFeedback } from './services/api';
 
 function App() {
   const [inputText, setInputText] = useState('');
@@ -9,15 +8,25 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
+  const [deepAnalysis, setDeepAnalysis] = useState(true);
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem('tg_history');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const steps = [
-    "ClaimAgent: Isolating keywords & entities...",
-    "WebAgent: Scouting global news databases...",
-    "ScraperAgent: Extracting neural content...",
-    "EvidenceAgent: Analyzing BERT similarity...",
-    "BiasAgent: Measuring emotional subjectivity...",
-    "ReflectionAgent: Evaluating truth confidence..."
+    "ISOLATING CLAIM ENTITIES",
+    "CROSS-REFERENCING GLOBAL DATABASES",
+    "SCRAPING VERIFIED SOURCES",
+    "ANALYZING NEURAL PATTERNS",
+    "EVALUATING EMOTIONAL BIAS",
+    "FINALIZING FORENSIC VERDICT"
   ];
+
+  useEffect(() => {
+    localStorage.setItem('tg_history', JSON.stringify(history.slice(0, 5)));
+  }, [history]);
 
   useEffect(() => {
     let interval;
@@ -25,150 +34,183 @@ function App() {
       setActiveStep(0);
       interval = setInterval(() => {
         setActiveStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
-      }, 1500);
+      }, deepAnalysis ? 1500 : 700);
     }
     return () => clearInterval(interval);
-  }, [loading]);
+  }, [loading, deepAnalysis]);
 
   const handleScan = async () => {
     if (!inputText) return;
     setLoading(true);
     setResult(null);
+    setFeedbackSent(false);
 
     try {
       const data = await analyzeNews(inputText, inputType);
-      // Wait for terminal simulation to finish if it's too fast
+      setHistory(prev => [{ text: inputText.substring(0, 30) + "...", verdict: data.final_verdict, date: new Date().toLocaleTimeString() }, ...prev]);
       setResult(data);
       setLoading(false);
     } catch (error) {
-      setResult({ 
-        prediction: "Error", 
-        message: `Neural Engine Offline: ${error.message}`,
-        trust_score: 0,
-        status_label: "🚨 ERROR",
-        sentiment: { polarity: 0, subjectivity: 0, sentiment_label: "Offline", bias_label: "Offline" }
-      });
       setLoading(false);
+      alert("Neural Lab Connection Failed.");
+    }
+  };
+
+  const handleFeedback = async (label) => {
+    try {
+      await submitFeedback(inputText, label);
+      setFeedbackSent(true);
+    } catch (e) {
+      alert("Calibration Error.");
     }
   };
 
   return (
-    <div className="app-container">
-      <div className="mesh-glow-1"></div>
-      <div className="mesh-glow-2"></div>
+    <div className="app-wrapper">
+      <div className="bg-glow"></div>
       
-      <header className="header animate-in">
-        <h1 className="logo">🛡️ Truth<span>Guard</span></h1>
-        <p className="subtitle">DECENTRALIZED MULTI-AGENT TRUTH IDENTIFICATION</p>
-      </header>
+      {/* 🏛️ NAVIGATION */}
+      <nav className="navbar animate-in">
+        <div className="nav-logo">TRUTH<span>GUARD</span>.LAB</div>
+        <div className="nav-actions">
+           <div className="scan-mode">
+              <span>{deepAnalysis ? "DEEP FORENSICS" : "QUICK SCAN"}</span>
+              <label className="switch">
+                 <input type="checkbox" checked={deepAnalysis} onChange={() => setDeepAnalysis(!deepAnalysis)} />
+                 <span className="slider round"></span>
+              </label>
+           </div>
+           <div className="history-badge">HISTORY: {history.length}</div>
+        </div>
+      </nav>
 
-      <main className="main-content">
-        <section className="glass-panel input-section animate-in">
-          <div className="tab-container">
-            <button className={`tab ${inputType === 'text' ? 'active' : ''}`} onClick={() => { setInputType('text'); setInputText(''); setResult(null); }}>📝 DEEP SCAN</button>
-            <button className={`tab ${inputType === 'url' ? 'active' : ''}`} onClick={() => { setInputType('url'); setInputText(''); setResult(null); }}>🔗 URL SCAN</button>
-          </div>
-
-          <div className="input-area">
-            {inputType === 'text' ? (
-              <textarea placeholder="Paste source material here for agentic analysis..." value={inputText} onChange={(e) => setInputText(e.target.value)} rows={6} />
-            ) : (
-              <input type="url" placeholder="Enter news URL for a real-time credibility scan..." value={inputText} onChange={(e) => setInputText(e.target.value)} className="url-input" />
-            )}
-          </div>
-
-          <button className={`scan-btn ${loading ? 'loading' : ''} ${!inputText ? 'disabled' : ''}`} onClick={handleScan} disabled={!inputText || loading}>
-            {loading ? "DISTRIBUTING TO AGENT NETWORK..." : "⚡ START NEURAL SCAN"}
-          </button>
-
-          {loading && (
-            <div className="neural-terminal animate-in">
-              <div className="terminal-header">
-                <span className="dot red"></span><span className="dot yellow"></span><span className="dot green"></span>
-                <span className="terminal-title">AGENT_ACTIVITY_LOG</span>
-              </div>
-              <div className="terminal-body">
-                {steps.map((step, i) => (
-                  <div key={i} className={`log-line ${i === activeStep ? 'active' : i < activeStep ? 'done' : 'pending'}`}>
-                    <span className="status-icon">{i < activeStep ? '✓' : i === activeStep ? '●' : '○'}</span>
-                    <span className="log-text">{step}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-
-        {result && (
-          <section className="result-section">
+      <main className="container">
+        
+        {/* 🔍 INPUT HUB */}
+        {!result && !loading && (
+          <section className="hero-section animate-in">
+            <h1 className="hero-title">Verify the World's Information.</h1>
+            <p className="hero-subtitle">Agentic Multi-Layer Disinformation Detection Engine</p>
             
-            <BentoCard className="bento-score" delay="0s">
-               <div className="score-header"><h3>Neural Verdict</h3></div>
-               <div className="circular-progress">
-                  <div className="inner-circle">
-                    <span className="score-value" style={{ color: result.prediction === 'Real' ? '#10b981' : result.prediction === 'Fake' ? '#f43f5e' : '#f59e0b' }}>
-                      {Math.round(result.trust_score)}%
-                    </span>
+            <div className="input-card">
+               <div className="input-tabs">
+                  <button className={inputType === 'text' ? 'active' : ''} onClick={() => setInputType('text')}>TEXT INPUT</button>
+                  <button className={inputType === 'url' ? 'active' : ''} onClick={() => setInputType('url')}>URL LINK</button>
+               </div>
+               <div className="input-field">
+                  {inputType === 'text' ? (
+                    <textarea placeholder="Paste your source text here..." value={inputText} onChange={(e) => setInputText(e.target.value)} rows={5} />
+                  ) : (
+                    <input type="url" placeholder="Enter article URL..." value={inputText} onChange={(e) => setInputText(e.target.value)} />
+                  )}
+               </div>
+               <button className="main-scan-btn" onClick={handleScan}>RUN FORENSIC ANALYSIS</button>
+            </div>
+          </section>
+        )}
+
+        {/* 🚦 ANALYZING STATE */}
+        {loading && (
+          <section className="loading-stage animate-in">
+             <div className="scanner-ui">
+                <div className="scan-line"></div>
+                <h2>Neural Investigation in Progress...</h2>
+                <div className="step-viewer">
+                   {steps[activeStep]}
+                </div>
+                <div className="progress-pills">
+                  {steps.map((_, i) => <div key={i} className={`pill ${i <= activeStep ? 'active' : ''}`}></div>)}
+                </div>
+             </div>
+          </section>
+        )}
+
+        {/* 📊 FORENSIC REPORT RESULTS */}
+        {result && !loading && (
+          <section className="report-layout animate-in">
+            <div className="report-header">
+               <button className="back-btn" onClick={() => setResult(null)}>← NEW INVESTIGATION</button>
+               <div className="report-id">REPORT ID: #{Math.random().toString(36).substring(7).toUpperCase()}</div>
+            </div>
+
+            <div className={`verdict-banner ${result.final_verdict.toLowerCase()}`}>
+               <div className="v-label">NEURAL VERDICT</div>
+               <div className="v-status">{result.final_verdict.toUpperCase()}</div>
+               <div className="v-trust">
+                  <span>TRUTH SCORE: {Math.round(result.truth_score * 100)}%</span>
+                  <div className="trust-meter"><div className="fill" style={{ width: `${result.truth_score * 100}%` }}></div></div>
+               </div>
+            </div>
+
+            <div className="insight-section">
+               <h3>Synthesis Narrative</h3>
+               <p className="narrative-text">"{result.neural_synthesis}"</p>
+            </div>
+
+            <div className="stats-grid">
+               <div className="stat-card">
+                  <label>NEURAL ACCURACY</label>
+                  <div className="val">{Math.round(result.details.bert_score * 100)}%</div>
+                  <div className="sub">Patterns consistent with {result.final_verdict === 'Real' ? 'Fact' : 'Propaganda'}</div>
+               </div>
+               <div className="stat-card">
+                  <label>EVIDENCE DENSITY</label>
+                  <div className="val">{result.details.supporting}</div>
+                  <div className="sub">Trusted supporting sources found</div>
+               </div>
+               <div className="stat-card">
+                  <label>BIAS INTENSITY</label>
+                  <div className="val neg">{Math.round(result.details.bias_penalty * 100)}%</div>
+                  <div className="sub">Neural subjectivity penalty</div>
+               </div>
+            </div>
+
+            <div className="evidence-timeline">
+               <h3>Chain of Evidence</h3>
+               <div className="timeline-items">
+                  {result.details.article_results?.map((news, i) => (
+                    <div key={i} className={`timeline-card ${news.label.toLowerCase()}`}>
+                       <div className="t-meta">
+                          <span className="source-domain">{new URL(news.url).hostname.replace('www.', '')}</span>
+                          <span className="label-badge">{news.label}</span>
+                       </div>
+                       <h4>{news.title}</h4>
+                       <p>{news.snippet}</p>
+                       <a href={news.url} target="_blank" rel="noreferrer" className="view-link">VIEW SOURCE ↗</a>
+                    </div>
+                  ))}
+               </div>
+            </div>
+
+            <div className="forensic-meta">
+               <div className="meta-box">
+                  <label>DETECTED STYLISTIC PATTERNS</label>
+                  <div className="chips">
+                    {result.metadata?.patterns.map((p, i) => <span key={i} className="badge alert">{p.replace('_', ' ')}</span>)}
                   </div>
                </div>
-               <div className={`score-badge ${result.prediction.toLowerCase()}`}>{result.status_label}</div>
-               <div className="confidence-label">Confidence: <span>{result.confidence || 'Medium'}</span></div>
-            </BentoCard>
+               <div className="meta-box">
+                  <label>IDENTIFIED ENTITIES</label>
+                  <div className="chips">
+                    {result.metadata?.entities.map((e, i) => <span key={i} className="badge trust">{e}</span>)}
+                  </div>
+               </div>
+            </div>
 
-            <BentoCard title="Neural Synthesis & Reasoning" delay="0.1s" className="bento-reasons">
-                {result.neural_synthesis && (
-                  <div className="synthesis-text animate-in">
-                    <p>{result.neural_synthesis}</p>
-                  </div>
-                )}
-                <div className="reason-divider">FOUNDATION FACTORS:</div>
-                <ul className="reason-list">
-                  {result.explanation ? result.explanation.map((r, i) => (
-                    <li key={i} className="reason-item">{r}</li>
-                  )) : (
-                    <p className="insight-msg">{result.message}</p>
-                  )}
-                </ul>
-            </BentoCard>
-
-            <BentoCard title="Emotional Tone & Focus" delay="0.2s">
-                <div className="sentiment-data">
-                  <div className="s-row">
-                    <span>Sentiment: </span>
-                    <strong style={{ color: result.sentiment?.sentiment_label === 'Positive' ? '#10b981' : '#f43f5e' }}>{result.sentiment?.sentiment_label || 'Neutral'}</strong>
-                  </div>
-                  <div className="s-row">
-                    <span>Subjectivity: </span>
-                    <strong>{result.sentiment?.bias_label || 'Balanced'}</strong>
-                  </div>
-                  <div className="meter-label">Neural Bias Intensity</div>
-                  <div className="bias-meter"><div className="meter-fill" style={{ width: `${(result.sentiment?.subjectivity || 0) * 100}%` }}></div></div>
-                </div>
-            </BentoCard>
-
-            {result.top_flags && result.top_flags.length > 0 && (
-               <BentoCard title="Neural Red Flags" delay="0.3s">
-                  <div className="flags-grid">
-                    {result.top_flags.map((flag, idx) => (
-                      <span key={idx} className={`flag-chip ${result.prediction === 'Real' ? 'real' : 'fake'}`}>{flag}</span>
-                    ))}
-                  </div>
-               </BentoCard>
-            )}
-
-            {result.related_news && result.related_news.length > 0 && (
-               <BentoCard title="Live Cross-Reference (Found Evidence)" className="bento-related" delay="0.4s">
-                  <div className="news-grid">
-                    {result.related_news.map((news, idx) => (
-                      <a href={news.url} target="_blank" rel="noreferrer" className="news-card" key={idx}>
-                        <h4>{news.title}</h4>
-                        <p>{news.body}</p>
-                        <span className="read-more">SOURCE: {new URL(news.url).hostname.replace('www.', '')} ↗</span>
-                      </a>
-                    ))}
-                  </div>
-               </BentoCard>
-            )}
+            <div className={`calibration-section ${feedbackSent ? 'sent' : ''}`}>
+               <div className="c-info">
+                  <h4>Neural Calibration Hub</h4>
+                  <p>Does this verdict seem incorrect? Manually flagging this report helps our engine learn from its mistakes.</p>
+               </div>
+               {!feedbackSent ? (
+                 <div className="c-actions">
+                    <button className="c-btn real" onClick={() => handleFeedback('Real')}>FLAG AS REAL NEWS</button>
+                    <button className="c-btn fake" onClick={() => handleFeedback('Fake')}>FLAG AS DISINFORMATION</button>
+                 </div>
+               ) : (
+                 <div className="c-success">NEURAL EXPERIENCE SYNCED. THANK YOU.</div>
+               )}
+            </div>
           </section>
         )}
       </main>

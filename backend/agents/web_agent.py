@@ -13,12 +13,15 @@ class WebAgent:
         
         # 2. Fact-check Query
         fact_query = " ".join(entities[:2]) + " fact check"
+
+        # 3. Multi-language (Hindi/Regional) Query
+        lang_query = " ".join(entities[:2]) + " hindi news report samachar"
         
         # Add retrying signal if needed
         if retrying:
              base_query += " verified source report"
         
-        queries = [base_query, fact_query]
+        queries = [base_query, fact_query, lang_query]
         
         # 3. Call Search for each query
         all_results = []

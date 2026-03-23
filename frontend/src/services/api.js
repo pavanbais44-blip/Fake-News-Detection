@@ -7,7 +7,7 @@ export const analyzeNews = async (text, type = 'text') => {
   };
 
   try {
-    const response = await fetch(`${API_BASE_URL}/predict`, {
+    const response = await fetch(`${API_BASE_URL}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -20,6 +20,19 @@ export const analyzeNews = async (text, type = 'text') => {
     return data;
   } catch (error) {
     console.error('API Error:', error);
+    throw error;
+  }
+};
+export const submitFeedback = async (text, label) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, label })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Feedback Error:', error);
     throw error;
   }
 };

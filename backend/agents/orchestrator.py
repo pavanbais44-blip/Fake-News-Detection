@@ -1,4 +1,5 @@
 import math
+import asyncio
 from typing import Dict, Any, List
 from agents.claim_agent import ClaimAgent
 from agents.web_agent import WebAgent
@@ -7,22 +8,28 @@ from agents.evidence_agent import EvidenceAgent
 from agents.bias_agent import BiasAgent
 from agents.reflection_agent import ReflectionAgent
 from modules.credibility import credibility_module
+from modules.feedback_engine import feedback_engine
 
 class Orchestrator:
     """The central coordinator that manages the upgraded agentic pipeline execution."""
     
     def __init__(self):
-        self.max_retries = 1 # Only allowed one retry per requirements
+        self.max_retries = 1 
 
     async def analyze(self, input_text: str) -> Dict[str, Any]:
         """Executes the concurrent multi-agent workflow with parallel processing."""
         
+        # 🟢 EXPERIENCE CHECK (Learn from past mistakes)
+        experience = feedback_engine.check_experience(input_text)
+        exp_boost = 0.0
+        if experience:
+             print(f"[EXPERIENCE] Matching Past Correction ({experience['corrected_label']}). Experience applied.")
+             exp_boost = 0.5 if experience['corrected_label'] == "Real" else -0.5
+
         # 🟢 PHASE 1: Initial Extraction & Planning
-        # Starts with Claim Agent (This is the primer for everything else)
         claim_data = await ClaimAgent.extract(input_text)
         
-        # 🟢 PHASE 2: Concurrent Execution (Speed Optimization)
-        # We can search and analyze bias at the same time
+        # 🟢 PHASE 2: Concurrent Execution
         search_task = WebAgent.get_links(keywords=claim_data['keywords'], entities=claim_data['entities'])
         bias_task = BiasAgent.analyze(input_text)
         
@@ -33,9 +40,8 @@ class Orchestrator:
         scraper_data = await ScraperAgent.extract(urls)
         
         # 🟢 PHASE 4: Evidence & Reputation Analysis
-        # These can also run in parallel
         evidence_task = EvidenceAgent.analyze(input_text, scraper_data['evidence_articles'])
-        cred_task = asyncio.to_thread(credibility_module.calculate, urls) # CPU-bound, use thread
+        cred_task = asyncio.to_thread(credibility_module.calculate, urls) 
         
         evidence_data, cred_data = await asyncio.gather(evidence_task, cred_task)
         
@@ -75,41 +81,45 @@ class Orchestrator:
         cred_score = cred_data['credibility_score']
         bias_penalty = bias_data['bias_penalty']
         
-        final_score = (
-            (bert_score * 0.6) + 
-            (math.log(1 + supporting) * 0.25) + 
-            (cred_score * 0.1) - 
-            (bias_penalty * 0.05)
-        )
+        # Calculate components for visual breakdown
+        bert_share = (bert_score * 0.6)
+        evidence_share = (math.log(1 + supporting) * 0.25)
+        cred_share = (cred_score * 0.1)
+        neg_bias_share = -(bias_penalty * 0.05)
+        
+        final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost
         truth_score = max(0.0, min(1.0, float(final_score)))
+        
+        # Determine Verdict early for synthesis
+        final_verdict = "Suspicious"
+        if truth_score >= 0.6: final_verdict = "Real"
+        elif truth_score < 0.4: final_verdict = "Fake"
         
         # --- 🧪 EXPLAINABILITY REASONS ---
         explanation = []
-        if cred_score == 0: explanation.append("No authoritative news sources (Reuters/BBC/etc) confirmed this claim")
-        if bias_penalty > 0.1: explanation.append("Neural tone analysis detected high levels of emotional manipulation")
-        if supporting < 2: explanation.append("Search agents found insufficient corroborating evidence in the current news cycle")
+        if cred_score == 0: explanation.append("No authoritative news sources confirmed this claim")
+        if bias_penalty > 0.1: explanation.append("High levels of emotional manipulation detected")
+        if supporting < 2: explanation.append("Insufficient corroborating evidence found online")
         if evidence_data['contradicting'] > 1: explanation.append("Multiple reports directly contradict this claim")
-        if bert_score < 0.4: explanation.append("Stylistic patterns align with known disinformation datasets")
+        if bert_score < 0.4: explanation.append("Neural patterns align with known disinformation datasets")
+        if evidence_data['patterns']['is_clickbait']: explanation.append("Headline uses clickbait stylistic patterns (e.g. ALL CAPS)")
         
         if not explanation:
-             explanation.append("Claim is corroborated by trusted sources using neutral, factual reporting styles")
+             explanation.append("Claim is corroborated by trusted sources using neutral reporting styles")
 
         # --- ✍️ NEURAL SYNTHESIS (Human-Style Conclusion) ---
-        synthesis = f"After scanning {len(urls)} sources, TruthGuard has reached a {final_verdict} verdict. "
-        if supporting >= 2:
-            synthesis += f"We found {supporting} supporting reports from {cred_data['trusted_count']} trusted domains. "
-        else:
-            synthesis += f"However, only {supporting} supporting reports were found, indicating an information vacuum. "
+        synthesis = f"After investigating, TruthGuard has reached a {final_verdict} verdict. "
+        if experience:
+             synthesis += f"Note: This claim matches a previous human correction (similarity {int(experience['similarity']*100)}%). "
+        synthesis += f"We found {supporting} supporting reports from {cred_data['trusted_count']} trusted sources. "
         
-        if bias_penalty > 0.2:
-            synthesis += "The linguistic style is notably subjective, suggesting a non-factual intent. "
+        if bias_penalty > 0.15:
+            synthesis += "The linguistic style is notably subjective, suggesting biased intent. "
         else:
             synthesis += "The language is measured and objective. "
             
-        if final_verdict == "Fake":
-            synthesis += "Caution: This claim carries significant hallmarks of a coordinated disinformation effort."
-        elif final_verdict == "Real":
-            synthesis += "The claim appears consistent with verified reporting."
+        if evidence_data['patterns']['is_clickbait']:
+            synthesis += "Warning: Stylistic pattern detection flagged clickbait elements (e.g. excessive punctuation). "
 
         return {
             "truth_score": float(truth_score),
@@ -117,6 +127,19 @@ class Orchestrator:
             "final_verdict": final_verdict,
             "explanation": explanation[:3],
             "neural_synthesis": synthesis,
+            "metadata": {
+                "entities": claim_data['entities'],
+                "keywords": claim_data['keywords'],
+                "patterns": evidence_data['patterns']['patterns_found'],
+                "experience_match": bool(experience)
+            },
+            "score_breakdown": {
+                "neural_patterns": round(bert_share, 2),
+                "live_evidence": round(evidence_share, 2),
+                "credibility_boost": round(cred_share, 2),
+                "bias_penalty": round(neg_bias_share, 2),
+                "human_correction": round(exp_boost, 2)
+            },
             "details": {
                 "bert_score": round(bert_score, 2),
                 "supporting": supporting,
@@ -124,6 +147,7 @@ class Orchestrator:
                 "credibility_score": round(cred_score, 2),
                 "bias_penalty": round(bias_penalty, 2),
                 "retried": retried,
+                "article_results": evidence_data['article_results'], # GRANULAR DATA FOR UI
                 "agent_activities": [
                     {"agent": "ClaimAgent", "task": "Entity Extraction", "status": "Finished"},
                     {"agent": "WebAgent", "task": "Evidence Retrieval", "status": "Finished"},
@@ -131,7 +155,6 @@ class Orchestrator:
                     {"agent": "EvidenceAgent", "task": "Cross-Comparison", "status": "Finished"},
                     {"agent": "BiasAgent", "task": "Sentiment Processing", "status": "Finished"},
                     {"agent": "ReflectionAgent", "task": "Final Verification", "status": "Finished"}
-                ],
-                "related_news": search_data.get('results', [])
+                ]
             }
         }
