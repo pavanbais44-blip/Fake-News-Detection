@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import { analyzeNews } from './services/api';
+import BentoCard from './components/BentoCard';
 
 function App() {
   const [inputText, setInputText] = useState('');
@@ -13,35 +15,21 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch('http://localhost:8000/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: inputType === 'text' ? inputText : null,
-          url: inputType === 'url' ? inputText : null
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Scanner Anomaly");
+      const data = await analyzeNews(inputText, inputType);
       
+      // Artificial delay for better UX neural scan feeling
       setTimeout(() => {
         setResult(data);
         setLoading(false);
-      }, 800);
+      }, 1000);
 
     } catch (error) {
-      console.error("Error:", error);
       setResult({ 
         prediction: "Error", 
-        message: `System Error: ${error.message}. Backend Connection Offline.`,
+        message: `Neural Engine Offline: ${error.message}`,
         trust_score: 0,
         status_label: "🚨 ERROR",
-        related_news: [],
-        top_flags: [],
-        source_reliability: "Unknown",
-        domain: "",
-        sentiment: { polarity: 0, subjectivity: 0, sentiment_label: "Error", bias_label: "Error" }
+        sentiment: { polarity: 0, subjectivity: 0, sentiment_label: "Offline", bias_label: "Offline" }
       });
       setLoading(false);
     }
@@ -54,92 +42,72 @@ function App() {
       
       <header className="header animate-in">
         <h1 className="logo">🛡️ Truth<span>Guard</span></h1>
-        <p className="subtitle">AI-POWERED TRUTH IDENTIFICATION ENGINE</p>
+        <p className="subtitle">DECENTRALIZED AGENTIC TRUTH IDENTIFICATION</p>
       </header>
 
       <main className="main-content">
-        <div className="glass-panel input-section animate-in">
+        <section className="glass-panel input-section animate-in">
           <div className="tab-container">
-            <button className={`tab ${inputType === 'text' ? 'active' : ''}`} onClick={() => { setInputType('text'); setInputText(''); setResult(null); }}>📝 DEEP ANALYSIS</button>
-            <button className={`tab ${inputType === 'url' ? 'active' : ''}`} onClick={() => { setInputType('url'); setInputText(''); setResult(null); }}>🔗 URL SCANNER</button>
+            <button className={`tab ${inputType === 'text' ? 'active' : ''}`} onClick={() => { setInputType('text'); setInputText(''); setResult(null); }}>📝 DEEP SCAN</button>
+            <button className={`tab ${inputType === 'url' ? 'active' : ''}`} onClick={() => { setInputType('url'); setInputText(''); setResult(null); }}>🔗 URL SCAN</button>
           </div>
 
           <div className="input-area">
             {inputType === 'text' ? (
-              <textarea placeholder="Paste the source material here to analyze neural patterns..." value={inputText} onChange={(e) => setInputText(e.target.value)} rows={6} />
+              <textarea placeholder="Paste source material here for agentic analysis..." value={inputText} onChange={(e) => setInputText(e.target.value)} rows={6} />
             ) : (
-              <input type="url" placeholder="Enter live news URL for instant credibility scan..." value={inputText} onChange={(e) => setInputText(e.target.value)} className="url-input" />
+              <input type="url" placeholder="Enter news URL for a real-time credibility scan..." value={inputText} onChange={(e) => setInputText(e.target.value)} className="url-input" />
             )}
           </div>
 
           <button className={`scan-btn ${loading ? 'loading' : ''} ${!inputText ? 'disabled' : ''}`} onClick={handleScan} disabled={!inputText || loading}>
-            {loading ? "INITIALIZING NEURAL SCAN..." : "⚡ START ENGINE"}
+            {loading ? "DISTRIBUTING TASKS TO AGENTS..." : "⚡ START NEURAL SCAN"}
           </button>
-        </div>
+        </section>
 
         {result && (
-          <div className="result-section">
+          <section className="result-section">
             
-            <div className="bento-card bento-score animate-in">
-               <div className="score-header"><h3>Current Trust</h3></div>
+            <BentoCard className="bento-score" delay="0s">
+               <div className="score-header"><h3>Neural Verdict</h3></div>
                <div className="circular-progress">
                   <div className="inner-circle">
                     <span className="score-value" style={{ color: result.prediction === 'Real' ? '#10b981' : '#f43f5e' }}>{result.trust_score}%</span>
                   </div>
                </div>
                <div className={`score-badge ${result.prediction === 'Real' ? 'real' : 'fake'}`}>{result.status_label}</div>
-            </div>
+            </BentoCard>
 
-            <div className="bento-card bento-insight animate-in" style={{ animationDelay: '0.1s' }}>
-                <div className="insight-header">AI Neural Analysis</div>
-                <div className="insight-msg">{result.message}</div>
-            </div>
+            <BentoCard title="Agent Insights" delay="0.1s">
+                <div className="insight-msg">{result.message || "Deep learning scan complete."}</div>
+            </BentoCard>
 
-            {/* --- 🧠 SENTIMENT & BIAS ANALYSIS BENTO BOX --- */}
-            <div className="bento-card bento-flags animate-in" style={{ animationDelay: '0.2s' }}>
-                <div className="insight-header">Emotional Tone & Bias</div>
+            <BentoCard title="Bias Analysis" delay="0.2s">
                 <div className="sentiment-data">
                   <div className="s-row">
                     <span>Tone: </span>
-                    <strong style={{ color: result.sentiment.polarity < -0.2 ? '#f43f5e' : result.sentiment.polarity > 0.2 ? '#10b981' : '#64748b' }}>
-                      {result.sentiment.sentiment_label}
-                    </strong>
+                    <strong style={{ color: result.sentiment?.polarity < -0.2 ? '#f43f5e' : '#10b981' }}>{result.sentiment?.sentiment_label}</strong>
                   </div>
                   <div className="s-row">
-                    <span>Bias Type: </span>
-                    <strong style={{ color: result.sentiment.subjectivity > 0.5 ? '#f59e0b' : '#10b981' }}>
-                      {result.sentiment.bias_label}
-                    </strong>
+                    <span>Subjectivity: </span>
+                    <strong style={{ color: result.sentiment?.subjectivity > 0.5 ? '#f59e0b' : '#10b981' }}>{result.sentiment?.bias_label}</strong>
                   </div>
-                  <div className="bias-meter-container">
-                    <div className="meter-label">Fact vs Opinion</div>
-                    <div className="meter"><div className="meter-fill" style={{ width: `${result.sentiment.subjectivity * 100}%`, background: result.sentiment.subjectivity > 0.5 ? '#f59e0b' : '#6366f1' }}></div></div>
-                  </div>
+                  <div className="bias-meter"><div className="meter-fill" style={{ width: `${(result.sentiment?.subjectivity || 0) * 100}%` }}></div></div>
                 </div>
-            </div>
+            </BentoCard>
 
-            {result.domain && (
-               <div className="bento-card bento-domain animate-in" style={{ animationDelay: '0.3s' }}>
-                  <div className="insight-header">Publisher ID</div>
-                  <div className="domain-name">{result.domain}</div>
-                  <div className={`reliability-badge ${result.source_reliability.toLowerCase().includes('high') ? 'reliable' : result.source_reliability.toLowerCase().includes('low') ? 'danger' : 'neutral'}`}>
-                    {result.source_reliability}
+            {result.top_flags && (
+               <BentoCard title="Context Flags" delay="0.3s">
+                  <div className="flags-grid">
+                    {result.top_flags.map((flag, idx) => (
+                      <span key={idx} className={`flag-chip ${result.prediction === 'Real' ? 'real' : 'fake'}`}>{flag}</span>
+                    ))}
                   </div>
-               </div>
+               </BentoCard>
             )}
 
-            <div className="bento-card animate-in" style={{ animationDelay: '0.4s' }}>
-                <div className="insight-header">{result.prediction === 'Fake' ? '🔴 RED FLAGS' : '🔵 KEYWORDS'}</div>
-                <div className="flags-grid">
-                  {result.top_flags && result.top_flags.map((flag, idx) => (
-                    <span key={idx} className={`flag-chip ${result.prediction === 'Real' ? 'real' : 'fake'}`}>{flag}</span>
-                  ))}
-                </div>
-            </div>
-
             {result.related_news && result.related_news.length > 0 && (
-               <div className="bento-card bento-related animate-in" style={{ animationDelay: '0.5s' }}>
-                  <div className="insight-header">📡 LIVE CROSS-REFERENCE (REAL NEWS)</div>
+               <BentoCard title="Live Cross-Reference" className="bento-related" delay="0.4s">
                   <div className="news-grid">
                     {result.related_news.map((news, idx) => (
                       <a href={news.url} target="_blank" rel="noreferrer" className="news-card" key={idx}>
@@ -149,14 +117,13 @@ function App() {
                       </a>
                     ))}
                   </div>
-               </div>
+               </BentoCard>
             )}
-
-          </div>
+          </section>
         )}
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

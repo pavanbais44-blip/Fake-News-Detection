@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Python Agentic Backend Cluster
+  truthguard-backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: truthguard_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/data
+    environment:
+      - ENV=production
+    restart: always
+
+  # React Production Frontend (Serving via Nginx)
+  truthguard-frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: truthguard_webapp
+    ports:
+      - "80:80"
+    depends_on:
+      - truthguard-backend
+    restart: always

@@ -6,5 +6,11 @@ numpy
 beautifulsoup4
 newspaper3k
 nltk
-spacy
-duckduckgo_search
+joblib
+textblob
+lxml_html_clean
+ddgs
+transformers
+torch
+scipy
+
