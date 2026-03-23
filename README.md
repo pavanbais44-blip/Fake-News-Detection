@@ -1,45 +1,81 @@
-# 🛡️ TruthGuard: AI-Powered Fake News Detection
+# 🛡️ TruthGuard: Hybrid BERT-Powered Truth Engine
 
-![TruthGuard Banner](https://img.shields.io/badge/Status-Development-orange) ![License](https://img.shields.io/badge/License-MIT-green) ![Cost](https://img.shields.io/badge/Cost-$0%20(Free)-blue)
+![TruthGuard Banner](https://img.shields.io/badge/Status-Production--Ready-brightgreen) ![License](https://img.shields.io/badge/License-MIT-green) ![Engine](https://img.shields.io/badge/Intelligence-BERT_Neural_Net-blue) ![Performance](https://img.shields.io/badge/Speed-Optimized_via_uv-orange)
 
 ## 📌 Project Overview
-TruthGuard is an advanced, high-performance Machine Learning pipeline designed to detect and classify fabricated news articles, misinformation, and clickbait. Developed as a final-year college project, it leverages deep Natural Language Processing (NLP) to provide real-time credibility scoring for text and URLs.
+TruthGuard is a state-of-the-art **Fake News Identification Platform** that combines **Deep Learning (BERT)** with **Real-Time Global Verification**. Unlike standard classifiers that only look at word patterns, TruthGuard "understands" the context of news articles and crawls live news databases to find supporting evidence.
 
-## ✨ Core Features
-- **Real-Time Text Analysis:** Paste any news article to instantly receive a "Fake" or "Real" confidence score.
-- **Explainable AI (XAI):** Highlights specific words and rhetorical patterns that influenced the model's decision.
-- **URL Scraping:** Automatically bypasses ads to extract and analyze text directly from live news websites.
-- **Premium User Interface:** A blazing-fast, modern, glassmorphic dashboard built for seamless user experience.
-
-## 🛠️ Tech Stack (100% Free & Open-Source)
-Everything in this project is built using free, open-source tools—requiring **zero financial investment**.
-
-### Frontend (Client-Side)
-- **Framework:** React (via Vite) for a lightning-fast Single Page Application.
-- **Styling:** Vanilla CSS (Custom modern animations, dark mode, no bloated frameworks).
-- **Hosting (Free):** Vercel or GitHub Pages.
-
-### Backend (Server-Side)
-- **Runtime:** Python 3.12+ (Optimized via **uv** package manager)
-- **Framework:** FastAPI - asynchronous and highly performant.
-- **Scraping:** BeautifulSoup4 & Newspaper3k (Free web scraping).
-- **Inference:** BERT Transformers (Hugging Face).
-- **Execution:** `uv run app.py` (Blazing fast startup & automatic dependency management).
-
-### Machine Learning (The Core)
-- **Language:** Python 3.10+
-- **NLP Libraries:** NLTK, spaCy.
-- **Algorithms:** TF-IDF Vectorizer + Passive-Aggressive Classifier (or Scikit-learn Logistic Regression).
-- **Dataset (Free):** ISOT Fake News Dataset / Kaggle.
-
-### Architecture & Performance
-- **Database:** SQLite (Built-in, local, $0 cost).
-- **Caching:** In-memory LRU Cache (To remember previously scanned viral articles for instant results without re-running the ML model).
-
-## 🚀 Future Enhancements (Phase 2)
-- Multi-modal detection (analyzing images within the articles).
-- Chrome Extension for live browsing alerts.
-- Source credibility database (Domain scoring).
+Developed as a high-performance final-year project, it offers a professional-grade solution to the problem of digital misinformation.
 
 ---
-*Created for final-year submission. Designed with performance, scalability, and zero-cost deployment in mind.*
+
+## ✨ Core Intelligent Features
+
+### 🧠 1. BERT Neural Scan (Contextual Analysis)
+Instead of simple word counts, TruthGuard uses an **Advanced Transformer (BERT)** model to analyze the linguistic DNA of an article. It can detect:
+*   **Manipulation Patterns:** Phrases and structures common in propaganda.
+*   **Contextual Sarcasm:** Identifying ironical or satirical tones.
+*   **Nuanced Disinformation:** Catching subtle lies that traditional models miss.
+
+### 📡 2. Live Cross-Reference (The "Ground Truth" Layer)
+TruthGuard doesn't work in a vacuum. When you scan a claim, the engine:
+1.  Extracts core keywords (Nouns/Verbs).
+2.  Searches global news databases via **DuckDuckGo** in real-time.
+3.  Cross-references your input with **Verified News Sources** (BBC, Reuters, AP, etc.).
+4.  Provides a **"Verification Boost"** if the story is confirmed by official reporting.
+
+### ⚖️ 3. Neural Sentiment & Bias Meter
+Misinformation is often highly emotional. TruthGuard uses a specialized **Sentiment BERT** to measure:
+*   **Polarity:** Is the tone intensely positive or aggressive?
+*   **Subjectivity/Bias:** Does the article read like a fact or a heavily biased opinion?
+
+---
+
+## 🛠️ Modern Tech Stack
+
+### Backend (The Intelligence Hub)
+*   **Runtime:** Python 3.12+ managed by **[uv](https://github.com/astral-sh/uv)** (Blazing fast local environment).
+*   **API:** FastAPI (Asynchronous & type-safe).
+*   **AI Models:** 
+    *   `bert-tiny-finetuned-fake-news-detection` (Efficient context classifier).
+    *   `distilbert-base-uncased-finetuned-sst-2-english` (Advanced sentiment).
+*   **Scraping:** Newspaper3k & BeautifulSoup4.
+
+### Frontend (The Dashboard)
+*   **Framework:** React 18+ (Vite) for a logic-heavy, lightning-fast UI.
+*   **Design:** Premium Glassmorphic / Bento-Grid layout with vanilla CSS animations.
+*   **Visuals:** Real-time circular trust meters and dynamic bias charts.
+
+---
+
+## 🚀 Instant Setup Guide
+
+### 1. Prerequisites
+Ensure you have **Python 3.12+** and **Node.js** installed.
+You must also have **uv** installed (`pip install uv`).
+
+### 2. Launch the Backend
+```powershell
+cd backend
+uv sync
+uv run app.py
+```
+*(On first run, the system will download ~100MB of BERT neural weights—this only happens once!)*
+
+### 3. Launch the Frontend
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🔗 Architecture Logic
+The "Truth Score" is calculated using a **Weighted Hybrid Formula**:
+Score = (BERT_Score * 0.7) + (Live_Evidence_Boost * 0.3) - Subjectivity_Penalty
+
+This ensures that even if a stylistic pattern looks "Real," the absence of global news coverage for a major claim will still result in a **"Suspicious"** or **"High-Risk"** alert.
+
+---
+*Developed for excellence. Built for Truth.*
