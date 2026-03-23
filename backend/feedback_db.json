@@ -3,5 +3,10 @@
         "text": "narendra modi is dead now",
         "corrected_label": "Fake",
         "timestamp": "a9ffc18a"
+    },
+    {
+        "text": "Shocking revelation! narendra modi is died is actually a secret agenda.",
+        "corrected_label": "Fake",
+        "timestamp": "3a7e7b4a"
     }
 ]
