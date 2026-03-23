@@ -1,48 +1,25 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-.venv/
-venv/
-ENV/
+# --- ROOT GITIGNORE ---
 
-# Models
-# backend/model.pkl
-# backend/vectorizer.pkl
+# Node artifacts
+**/node_modules/
+**/dist/
+**/npm-debug.log*
 
-# Node / Frontend
-node_modules/
-dist/
-dist-ssr/
-*.local
-.eslintcache
-.stylelintcache
-.node_repl_history
+# Python artifacts
+**/__pycache__/
+**/*.py[cod]
+**/*.pkl
+**/*.log
 
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
+# Environment artifacts
+**/.venv/
+**/.env
+**/.python-version
+**/.uv/
 
-# OS
+# OS artifacts
 .DS_Store
 Thumbs.db
+
+# Docker artifacts
+docker-compose.override.yml
