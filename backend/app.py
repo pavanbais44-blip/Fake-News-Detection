@@ -1,18 +1,19 @@
 import time
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from agents.orchestrator import Orchestrator
 from tools.scraper import scraper_tool
 from collections import defaultdict
+from fastapi.concurrency import run_in_threadpool
 
 app = FastAPI(title="TruthGuard Agentic Core 2.0", description="Upgraded Decentralized AI System for News Analysis")
 
-# 🏛️ CORS SETUP
+# 🏛️ CORS SETUP (HARDENED)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:80", "http://127.0.0.1:80"], 
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -31,8 +32,8 @@ async def rate_limit(request: Request, call_next):
     return await call_next(request)
 
 class AnalyzeRequest(BaseModel):
-    text: Optional[str] = None
-    url: Optional[str] = None
+    text: Optional[str] = Field(None, max_length=5000)
+    url: Optional[str] = Field(None, max_length=500)
 
 # 🧠 GLOBAL ORCHESTRATOR INSTANCE
 orch = Orchestrator()
@@ -41,21 +42,19 @@ orch = Orchestrator()
 def home():
     return {"status": "TruthGuard Agentic 2.0 Active"}
 
-from fastapi.concurrency import run_in_threadpool
-
 from modules.feedback_engine import feedback_engine
 from modules.generator import misinfo_generator
 from modules.evaluation import evaluation_engine
 
 class FeedbackRequest(BaseModel):
-    text: str
+    text: str = Field(..., max_length=5000)
     label: str
 
 class GenerateRequest(BaseModel):
-    text: str
+    text: str = Field(..., max_length=5000)
 
 class EvaluationItem(BaseModel):
-    text: str
+    text: str = Field(..., max_length=5000)
     label: str
 
 @app.post("/generate_fake")
@@ -129,4 +128,4 @@ async def predict_compatibility(request: AnalyzeRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

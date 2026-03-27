@@ -21,8 +21,12 @@ RUN uv sync --frozen --no-dev
 # 📥 Pre-fetch Neural & Lexical Data
 RUN uv run python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('stopwords')"
 
+# 🔒 Hardening: Add Non-Root User
+RUN useradd -m tguser && chown -R tguser:tguser /app
+USER tguser
+
 # 🏁 Final Code Injection
-COPY . .
+COPY --chown=tguser:tguser . .
 
 EXPOSE 8000
 
