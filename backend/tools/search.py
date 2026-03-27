@@ -13,8 +13,9 @@ class SearchTool:
         # using @lru_cache on staticmethod works for query string.
         try:
             with DDGS() as ddgs:
-                # 🟢 CRITICAL: timelimit='d' ensures results from the last 24 hours ONLY
-                results = ddgs.news(query, max_results=max_results, timelimit='d')
+                # 🟢 CRITICAL: Removed strict timelimit to allow for historical fact-checking.
+                results = ddgs.news(query, max_results=max_results)
+
                 output = [
                     {
                         "title": r.get('title', ''), 

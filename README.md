@@ -1,76 +1,88 @@
-# 🛡️ TruthGuard 2.5: Agentic Real-Time Misinformation Forensics Lab
+# 🛡️ TruthGuard 2.9: Multi-Agent Forensic Laboratory
 
-![TruthGuard Banner](https://img.shields.io/badge/Status-Hardened--Production-brightgreen) ![License](https://img.shields.io/badge/License-MIT-green) ![Engine](https://img.shields.io/badge/Architecture-Multi--Agent_System-blueviolet) ![Performance](https://img.shields.io/badge/Speed-Optimized_via_uv-orange)
-
-## 📌 Project Overview
-TruthGuard 2.5 is a decentralized, **Multi-Agent Forensic Laboratory** designed for the professional-grade detection and analysis of digital disinformation. Unlike standard AI classifiers, TruthGuard 2.5 doesn't just "guess"; it **investigates the live truth** in real-time.
-
-The system employs a team of specialized AI agents that collaborate, debate, and cross-reference **minute-by-minute global news** to reach a high-fidelity "Neural Verdict." Version 2.5 introduces **Live News Indexing**, **SSRF-Hardened Security**, and an automated **Fact-Check Correction Engine**.
+TruthGuard is a state-of-the-art **Agentic AI** system designed for real-time fake news detection and misinformation forensics. Unlike traditional static models, TruthGuard 2.9 uses a **Consensus Engine** that scans live global news cycles and aggregates evidence from multiple independent channels to reach a verdict.
 
 ---
 
-## 🧠 Phase 3: Agentic Architecture (The Intelligence Hub)
+## 🏛️ System Architecture: The Multi-Agent Pipeline
 
-TruthGuard 2.0 utilizes a **Decentralized Multi-Agent Workflow** where each component has a specific forensic task:
+TruthGuard operates on a decentralized agentic workflow where specialized AI agents collaborate to verify a claim.
 
-### 🎭 1. Neural Debate Arena (`ALPHA` vs `OMEGA`)
-The final verdict is reached through an adversarial cross-examination. **Agent ALPHA** argues for the "Real" case, while **Agent OMEGA** focuses on finding disinformation patterns. A **Chief Justice Agent** then weighs the conflicting arguments to provide a transparent, critical-thinking rationale.
+### 1. 🧠 Orchestrator Agent (The Brain)
+The central coordinator that manages parallel execution, weighted scoring, and final verdict synthesis.
+- **Strict Evidence Minimum:** Requires at least 2 high-similarity reputable sources to mark a claim as "REAL."
+- **Institutional Trust Multiplier:** Amplifies evidence weight if it originates from high-repute global news domains.
+- **Neural Synthesis:** Generates a human-style forensic conclusion explaining the "Ground Truth."
 
-### 🧊 2. Atomic Claim Decomposition
-Instead of analyzing a broad paragraph, the `ClaimAgent` breaks complex text into **atomic sub-claims**. Each claim is verified individually against global news databases, ensuring that partial truths don't hide bigger lies.
+### 2. 🔍 Claim Agent (Decomposition)
+- **Granular Analysis:** Breaks down long user prompts into distinct, searchable sub-claims.
+- **Entity Extraction:** Identifies key people, organizations, and locations involved.
 
-### 🕰️ 3. Temporal Awareness & Staleness Detection
-Fake news often uses real footage or articles from years ago and presents them as "Breaking News." Our `TemporalModule` detects date-stamps in evidence and flags news older than 2 years as **"Suspiciously Stale."**
+### 3. 🌐 Web Agent (Mass Search)
+- **Channel Expansion:** Generates and executes 3+ optimized search queries simultaneously.
+- **Massive Scan:** Retrieval of up to **30 independent news results** (DuckDuckGo News Index).
 
-### 🔬 5. Minute-by-Minute Fact-Check (NEW v2.5)
-TruthGuard now queries the global **live news index** with a 24-hour strict filter. This allows the system to detect breaking news updates, live conference results, and ongoing disasters as they happen.
+### 4. 🧹 Scraper Agent (Extraction)
+- **High-Speed Cleaning:** Extracts clean text and metadata from up to **15 top-tier results** concurrently.
+- **SSRF Hardened:** Built-in protection against scanning restricted or internal loopback IPs.
 
-### ⚖️ 6. Automated Truth Correction (The Fact-Report)
-When a "Fake" verdict is reached, the system automatically identifies the most reliable **Correction Source** from verified news organizations and features it at the top of the report to directly replace disinformation with facts.
-
----
-
-## 🛠️ Modern Tech Stack
-
-### Backend (The Forensic Core)
-*   **Runtime:** Python 3.13 managed by **[uv](https://github.com/astral-sh/uv)**.
-*   **Orchestration:** Custom `Orchestrator` managing concurrent `asyncio` agent tasks.
-*   **Intelligence:** Hybrid Transformer models (`BERT`, `DistilBERT`) + Scikit-Learn.
-*   **Scraping:** Newspaper3k + BeautifulSoup4 with high-speed threadpooling.
-*   **Experience Engine:** Persistent `Tfidf` memory of past human-in-the-loop corrections.
-
-### Frontend (The Research Dashboard)
-*   **Framework:** React 18+ (Vite) with a clinical, dark industrial theme.
-*   **UI/UX:** Real-time "Execution Trace" showing agent activities, neural trust meters, and adversarial argument cards.
-*   **State:** Custom hooks for live-scanning states and investigation history.
+### 5. 🔬 Evidence Agent (Cross-Comparison)
+- **Semantic Mapping:** Uses high-dimensional TF-IDF vectors for semantic similarity.
+- **Contextual Contradiction:** Specifically tuned to detect "Death Rumors" (checking for 'alive' context vs 'dead' claims).
+- **Consensus Decision:** Decides the "Official Story" by finding the majority narrative among channels.
 
 ---
 
-## 🚀 Professional Setup Guide
+## 🎭 Specialized Forensic Modules
 
-### 1. Prerequisites
-*   **Python 3.12+** & **Node.js 18+**.
-*   Install **uv** for blazing fast backend performance: `pip install uv`.
+*   **Alpha vs Omega Debate:** An adversarial reasoning module where two agents argue the "Real" and "Fake" sides of a claim before a "Judge" (Orchestrator) decides.
+*   **Credibility Module:** A library of **25+ reputable news domains** (Reuters, BBC, AP, TOI, etc.) used to verify source integrity.
+*   **Experience Engine (Feedback):** A self-learning loop that stores every scan in a **SQLite Forensic Database** and learns from human corrections via a JSON database.
+*   **Temporal Module:** Detects "Temporal Drift" to identify if news is suspiciously old or misattributed.
+*   **Bias Agent:** Measures emotional priming, subjectivity, and sentiment-based linguistic manipulation.
 
-### 2. Launch the Backend
-```powershell
+---
+
+## 🚀 Installation & Launch
+
+### 🐍 Backend (Agentic Engine)
+Requires Python 3.13+ and `uv` package manager.
+```bash
 cd backend
 uv sync
-uv run python -m app
+uv run python app.py
 ```
-*(On first run, the system will download the BERT neural weights—this only happens once!)*
+*Port: 8000*
 
-### 3. Launch the Frontend
-```powershell
+### ⚛️ Frontend (Research Dashboard)
+Requires Node.js and `npm`.
+```bash
 cd frontend
 npm install
 npm run dev
 ```
+*Port: 5173*
 
 ---
 
-## 📊 Scientific Accuracy (Evaluation Mode)
-TruthGuard 2.0 includes a **Benchmark System** (Upgrade 15) to scientifically measure Precision, Recall, and Accuracy. Developers can upload a labeled dataset to the `/evaluate` endpoint to see exactly how the multi-agent system performs against real-world misinformation.
+## 🔒 Security & Performance
+- **Forensic Truncation:** Stabilized to handle long URL analysis without memory blowouts.
+- **SSRF Protection:** Blocks access to internal metadata and localhost.
+- **Hardened CORS:** Only allows verified frontend origins to prevent unauthorized API access.
+- **Fault-Tolerant I/O:** Isolated database logging ensures the system stays online even during disk/lock issues.
 
 ---
-*Built for the Truth. Engineered for the Future.*
+
+## 📄 API Reference
+
+### `POST /analyze`
+The primary entry point for the agentic laboratory.
+- **Request:** `{"text": "Claim here"}` or `{"url": "Link here"}`
+- **Response:**
+    - `truth_score`: 0.0 to 1.0 (float)
+    - `final_verdict`: "Real", "Fake", "Suspicious"
+    - `neural_synthesis`: Detailed human-style explanation
+    - `truth_source`: The most relevant article link found
+
+---
+*TruthGuard 2.9 (Consensus Engine) - Advanced Forensic Misinformation Analysis.*

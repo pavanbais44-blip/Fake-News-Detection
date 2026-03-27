@@ -23,5 +23,145 @@
         "text": "mia khalifa is dead",
         "corrected_label": "Fake",
         "timestamp": "a1109c37"
+    },
+    {
+        "text": "donald trump is dead",
+        "corrected_label": "Fake",
+        "timestamp": "29234438"
+    },
+    {
+        "text": "narendra modi is gay",
+        "corrected_label": "Fake",
+        "timestamp": "1b501aa2"
+    },
+    {
+        "text": "NASA's Perseverance rover successfully lands on Mars.",
+        "corrected_label": "Real",
+        "timestamp": "5447dda7"
+    },
+    {
+        "text": "Pope Francis endorses Donald Trump for President.",
+        "corrected_label": "Fake",
+        "timestamp": "3b7f01d8"
+    },
+    {
+        "text": "Queen Elizabeth II passed away at Balmoral Castle on Sept 8, 2022.",
+        "corrected_label": "Real",
+        "timestamp": "2513b598"
+    },
+    {
+        "text": "Drinking lemon juice in hot water cures COVID-19 in 24 hours.",
+        "corrected_label": "Fake",
+        "timestamp": "334814b1"
+    },
+    {
+        "text": "Lionel Messi wins his 8th Ballon d'Or in Paris.",
+        "corrected_label": "Real",
+        "timestamp": "e1858666"
+    },
+    {
+        "text": "Scientists find living dinosaurs on a secret island in Brazil.",
+        "corrected_label": "Fake",
+        "timestamp": "a25c8979"
+    },
+    {
+        "text": "The Titanic has been found in the North Atlantic.",
+        "corrected_label": "Real",
+        "timestamp": "b40ef8d6"
+    },
+    {
+        "text": "Elon Musk is buying the moon for $100 trillion.",
+        "corrected_label": "Fake",
+        "timestamp": "5aa6a41b"
+    },
+    {
+        "text": "Microsoft acquires Activision Blizzard for $68.7 billion.",
+        "corrected_label": "Real",
+        "timestamp": "960dd7c8"
+    },
+    {
+        "text": "Walking on grass in the morning prevents blindness.",
+        "corrected_label": "Fake",
+        "timestamp": "d0d16a54"
+    },
+    {
+        "text": "James Webb Space Telescope releases its first full-color images.",
+        "corrected_label": "Real",
+        "timestamp": "ccd769cd"
+    },
+    {
+        "text": "Drinking sea water increases IQ by 30 points.",
+        "corrected_label": "Fake",
+        "timestamp": "4db57737"
+    },
+    {
+        "text": "Bitcoin reaches an all-time high of $1 million.",
+        "corrected_label": "Fake",
+        "timestamp": "fa0df302"
+    },
+    {
+        "text": "NASA's Perseverance rover successfully lands on Mars.",
+        "corrected_label": "Real",
+        "timestamp": "b84e7aa2"
+    },
+    {
+        "text": "The 2024 Olympic Games are held in Paris, France.",
+        "corrected_label": "Real",
+        "timestamp": "a4b6ddd3"
+    },
+    {
+        "text": "Pope Francis endorses Donald Trump for President.",
+        "corrected_label": "Fake",
+        "timestamp": "cf9e8e34"
+    },
+    {
+        "text": "Queen Elizabeth II passed away at Balmoral Castle on Sept 8, 2022.",
+        "corrected_label": "Real",
+        "timestamp": "fe6a8dfd"
+    },
+    {
+        "text": "Drinking lemon juice in hot water cures COVID-19 in 24 hours.",
+        "corrected_label": "Fake",
+        "timestamp": "e36eea29"
+    },
+    {
+        "text": "Cats can talk but they choose not to because they are lazy.",
+        "corrected_label": "Fake",
+        "timestamp": "7a554523"
+    },
+    {
+        "text": "Lionel Messi wins his 8th Ballon d'Or in Paris.",
+        "corrected_label": "Real",
+        "timestamp": "fff5e038"
+    },
+    {
+        "text": "Scientists find living dinosaurs on a secret island in Brazil.",
+        "corrected_label": "Fake",
+        "timestamp": "71f38435"
+    },
+    {
+        "text": "The Titanic has been found in the North Atlantic.",
+        "corrected_label": "Real",
+        "timestamp": "a797020c"
+    },
+    {
+        "text": "Elon Musk is buying the moon for $100 trillion.",
+        "corrected_label": "Fake",
+        "timestamp": "d899b6de"
+    },
+    {
+        "text": "Microsoft acquires Activision Blizzard for $68.7 billion.",
+        "corrected_label": "Real",
+        "timestamp": "59997f02"
+    },
+    {
+        "text": "Walking on grass in the morning prevents blindness.",
+        "corrected_label": "Fake",
+        "timestamp": "29dcb672"
+    },
+    {
+        "text": "James Webb Space Telescope releases its first full-color images.",
+        "corrected_label": "Real",
+        "timestamp": "3205c007"
     }
 ]

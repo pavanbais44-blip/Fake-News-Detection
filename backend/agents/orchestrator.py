@@ -8,7 +8,7 @@ from agents.evidence_agent import EvidenceAgent
 from agents.bias_agent import BiasAgent
 from agents.reflection_agent import ReflectionAgent
 from modules.credibility import credibility_module
-from modules.feedback_engine import feedback_engine
+from database import feedback_engine
 from modules.debate import debate_arena
 from modules.temporal import temporal_module
 
@@ -96,44 +96,60 @@ class Orchestrator:
         cred_score = cred_data['credibility_score']
         bias_penalty = bias_data['bias_penalty']
         
-        # 1. Base weights: Prioritize Live News over Static Model
-        # BERT is now a secondary signal (30%), Evidence is primary (50%)
-        bert_share = (bert_score * 0.3)
-        # Dynamic Evidence: Increases with supports but is capped
-        evidence_share = (min(1.0, math.log(1 + supporting) / 1.5) * 0.45) 
+        # --- 📊 NEW WEIGHTED SCORING (Per Prompt Req) ---
+        ml_fake_score = evidence_data.get('avg_ml_fake_score', 0.5)
+        source_reputation_score = cred_data['credibility_score']
+        temporal_drift_score = 1.0 if temporal_res['is_suspiciously_stale'] else 0.0
+        bias_score = bias_data['subjectivity']
         
-        # 🟢 UPGRADE 18: Institutional Trust Multiplier
-        # High-repute sources amplify the evidence share
-        cred_multiplier = 0.15 if cred_score > 0.8 else 0.0
-        cred_share = (cred_score * 0.1) + cred_multiplier
+        # Base Weights
+        w_ml = 0.5
+        w_cred = 0.3
+        w_temp = 0.1
+        w_bias = 0.1
         
-        neg_bias_share = -(bias_penalty * 0.1)
+        # 🟢 EXPERIENCE ENGINE WEIGHT ADJUSTMENT
+        # If human feedback flagged this before, we trust the ML similarity more.
+        if experience:
+             w_ml += 0.2
+             w_cred -= 0.1
+             w_bias -= 0.1
+
+        # Calculate Overall Fake probability
+        overall_fake_score = (w_ml * ml_fake_score) + (w_cred * (1 - source_reputation_score)) + (w_temp * temporal_drift_score) + (w_bias * bias_score)
         
-        # 2. Forensic Logic: If no evidence is found for the claim, it is HIGHLY suspicious
-        # "Lack of evidence is evidence of absence" for breaking news claims.
-        evidence_vacuum_penalty = -0.5 if supporting < 2 else 0.0
+        # 🟢 APPLY DIRECT EXPERIENCE BOOST
+        # If we have match from a human correction, we shift the result toward it.
+        if experience:
+             # Higher similarity leads to stronger shift.
+             shift = exp_boost * experience['similarity']
+             overall_fake_score = max(0.0, min(1.0, overall_fake_score - shift)) # Subtract shift because exp_boost is +0.5 for REAL (lowers fake score)
+
         
-        # 3. Direct Contradiction: Sharp penalty for active debunking
-        # Increased to -0.8 to instantly kill rumors if debunked by even one source
-        contradiction_penalty = -(contradicting * 0.8)
+        # 🟢 UPGRADE 16: Strict Evidence Minimum Verification
+        # If we found no strong verifiers, the claim is highly likely to be misinformation.
+        if supporting == 0:
+             overall_fake_score = max(0.75, overall_fake_score + 0.45) # Very Strong shift to Fake
+        elif supporting < 2:
+             overall_fake_score = max(0.65, overall_fake_score + 0.25) # Moderate shift to Fake
+             
+        # Direct Contradiction: Sharp penalty for active debunking
+        if contradicting > 0:
+             overall_fake_score = min(1.0, overall_fake_score + 0.35)
+             
+        # Normalize strictly to 0.0-1.0
+        overall_fake_score = max(0.0, min(1.0, float(overall_fake_score)))
         
-        # 4. Freshness Boost (Reward breaking news)
-        urgency_boost = 0.1 if not temporal_res['is_suspiciously_stale'] and temporal_res['contains_dates'] else 0.0
+        # Convert to Truth Score (1.0 = Real, 0.0 = Fake) for output consistency
+        truth_score = 1.0 - overall_fake_score
         
-        final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost + contradiction_penalty + evidence_vacuum_penalty + urgency_boost
-        truth_score = max(0.0, min(1.0, float(final_score)))
-        
-        # 🟢 UPGRADE 16: Strict Evidence Minimum
-        # If we found less than 2 strong verifiers, we CANNOT guarantee truth.
-        if supporting < 2:
-            truth_score = min(0.4, truth_score)
-            
-        # Determine Verdict
+        # Determine Verdict mapping based on Fake probability (Balanced Thresholds)
         final_verdict = "Suspicious"
-        if truth_score >= 0.65: final_verdict = "Real"
-        elif truth_score < 0.4: final_verdict = "Fake"
+        if overall_fake_score >= 0.60: final_verdict = "Fake"
+        elif overall_fake_score <= 0.35: final_verdict = "Real"
         
         # 🟢 UPGRADE 10: Risk Classification
+
         risk_level = temporal_module.classify_risk(truth_score, evidence_data['patterns']['patterns_found'])
         
         # 🟢 UPGRADE 6: "What If I'm Wrong?" (Uncertainty Awareness)
@@ -197,8 +213,18 @@ class Orchestrator:
             synthesis += "Warning: Stylistic pattern detection flagged clickbait elements. "
             
         # 🟢 UPGRADE 19: EXPERIENCE HARVESTING
-        # Store result for self-training and improvement loop
+        # Store result for long-term database
         feedback_engine.log_scan(input_text, truth_score, final_verdict, supporting, contradicting)
+        
+        # 🟢 AUTO-DIDACTIC LEARNING (Self-Training)
+        # If the verdict is HIGH CONFIDENCE and has SOLID EVIDENCE, we promote it to an "Experience Lesson"
+        # This allows the system to "remember" current news for future similar queries.
+        if (supporting >= 3 or contradicting >= 2) and (truth_score > 0.90 or truth_score < 0.10):
+             # Only learn if it wasn't already a known experience to avoid redundancy
+             if not experience:
+                 print(f"[EXPERIENCE] Auto-harvesting high-confidence verdict for: {input_text[:30]}...")
+                 feedback_engine.save_correction(input_text, final_verdict)
+
 
         return {
             "truth_score": float(truth_score),
@@ -219,10 +245,10 @@ class Orchestrator:
                 "experience_match": bool(experience)
             },
             "score_breakdown": {
-                "neural_patterns": round(bert_share, 2),
-                "live_evidence": round(evidence_share, 2),
-                "credibility_boost": round(cred_share, 2),
-                "bias_penalty": round(neg_bias_share, 2),
+                "ml_fake_impact": round(w_ml * ml_fake_score, 2),
+                "reputation_impact": round(w_cred * (1 - source_reputation_score), 2),
+                "temporal_impact": round(w_temp * temporal_drift_score, 2),
+                "bias_impact": round(w_bias * bias_score, 2),
                 "human_correction": round(exp_boost, 2)
             },
             "details": {

@@ -29,12 +29,6 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
-def validate_url(url: str):
-    """Prevents SSRF by blocking internal/loopback IP requests."""
-    forbidden = ["localhost", "127.0.0.1", "0.0.0.0", "169.254.169.254"]
-    if any(f in url.lower() for f in forbidden):
-        raise HTTPException(status_code=400, detail="Security risk: Access to internal metadata/localhost blocked.")
-
 # 🚦 RATE LIMITER
 rate_limit_records = defaultdict(list)
 @app.middleware("http")
@@ -58,7 +52,7 @@ orch = Orchestrator()
 def home():
     return {"status": "TruthGuard Agentic 2.0 Active"}
 
-from modules.feedback_engine import feedback_engine
+from database import feedback_engine
 from modules.generator import misinfo_generator
 from modules.evaluation import evaluation_engine
 
@@ -101,9 +95,8 @@ async def analyze_claim(request: AnalyzeRequest):
     # 🔗 URL to Text Conversion (if needed)
     target_text = request.text
     if request.url and not target_text:
-         validate_url(request.url)
          try:
-             res = await run_in_threadpool(scraper_tool._extract, request.url)
+             res = await scraper_tool._extract(request.url)
              article_title = res.get('title', '')
              article_body = res.get('text', '')
              
@@ -112,7 +105,7 @@ async def analyze_claim(request: AnalyzeRequest):
              target_text = f"{article_title}. {article_body[:1000]}"
              
              if not target_text.strip():
-                  raise HTTPException(status_code=400, detail="Failed to extract text from URL. The page may be protected, empty, or bot-blocked.")
+                  raise HTTPException(status_code=400, detail="Failed to extract text from URL. The page may be protected, empty, or an SSRF risk.")
          except Exception as e:
              raise HTTPException(status_code=500, detail=f"Scraper Error: {str(e)}")
 

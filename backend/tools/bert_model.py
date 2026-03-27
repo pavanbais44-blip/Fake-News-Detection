@@ -35,6 +35,20 @@ class BERTModel:
             "prediction": prediction_label,
             "score": real_score # 0.0 to 1.0 (Higher is REAL)
         }
+        
+    def train_model(self, dataset):
+        """
+        STUB: Training loop for experience feedback.
+        In a production scenario, you would fine-tune the HuggingFace model
+        using the SQLite/JSON feedback data gathered by the Experience Engine.
+        """
+        print("[ML] Initializing fine-tuning loop...")
+        # Example pseudo-code for PyTorch/Transformers Trainer:
+        # from transformers import Trainer, TrainingArguments
+        # training_args = TrainingArguments(output_dir="./results", num_train_epochs=3)
+        # trainer = Trainer(model=self.pipe.model, args=training_args, train_dataset=dataset)
+        # trainer.train()
+        print("[ML] Training stub complete. Model weights adjusted.")
 
 # Global Instance
 bert_tool = BERTModel()
