@@ -19,7 +19,7 @@ class SentimentModel:
             print(f"[ERROR] Sentiment Load Failed: {e}")
 
     def analyze(self, text: str):
-        if not self.pipe: return {"label": "Neutral", "score": 0.5}
+        if not self.pipe: return {"sentiment": "Neutral", "score": 0.5, "subjectivity": 0.0}
         # BERT limit is 512 tokens
         res = self.pipe(text[:512])[0]
         

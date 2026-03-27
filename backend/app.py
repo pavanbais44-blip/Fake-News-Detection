@@ -104,18 +104,27 @@ async def analyze_claim(request: AnalyzeRequest):
          validate_url(request.url)
          try:
              res = await run_in_threadpool(scraper_tool._extract, request.url)
-             target_text = res.get('text', '')
-             if not target_text:
-                  raise HTTPException(status_code=400, detail="Failed to extract text from URL. The page may be protected or empty.")
+             article_title = res.get('title', '')
+             article_body = res.get('text', '')
+             
+             # 🟢 UPGRADE 20: Forensic Truncation
+             # Use the title as the primary claim + first 1000 chars of body
+             target_text = f"{article_title}. {article_body[:1000]}"
+             
+             if not target_text.strip():
+                  raise HTTPException(status_code=400, detail="Failed to extract text from URL. The page may be protected, empty, or bot-blocked.")
          except Exception as e:
              raise HTTPException(status_code=500, detail=f"Scraper Error: {str(e)}")
 
     # 🚀 Start Multi-Agent Search, Scrape & Classification
     try:
         result = await orch.analyze(target_text)
+        if not result or 'final_verdict' not in result:
+             raise Exception("Empty or malformed result from Agentive Orchestrator.")
         return result
     except Exception as e:
-        print(f"[ERROR] Engine Failure: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Agent System Failure: {str(e)}")
 
 # Legacy compatibility route for original frontend

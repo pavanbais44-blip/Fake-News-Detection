@@ -13,15 +13,17 @@ class SimilarityUtil:
         """Calculates semantic similarity using high-dimensional TF-IDF vectors (Upgrade 9)."""
         if not doc_list: return []
         
-        # Upgrade 9: Better similarity using n-grams and character-level embeddings
+        # Upgrade 21: Efficient Word-level vectorization
         vectorizer = TfidfVectorizer(
              stop_words='english', 
-             ngram_range=(1, 3), 
-             analyzer='char_wb' 
+             ngram_range=(1, 2), 
+             analyzer='word',
+             max_features=5000 
         )
         try:
-            # High-performance single-pass vectorization
-            tfidf_matrix = vectorizer.fit_transform([claim] + doc_list)
+            # Vectorize the corpus (current text + all docs)
+            all_text = [claim] + doc_list
+            tfidf_matrix = vectorizer.fit_transform(all_text)
             
             # Compare the first row (the claim) against all other rows (the docs)
             all_sims = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])[0]

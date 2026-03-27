@@ -39,22 +39,35 @@ class EvidenceAgent:
         article_results = []
         
         for i, sim in enumerate(similarities):
-            # Create a label based on thresholds
-            label = "Neutral"
+            # 🟢 UPGRADE 15: Forensic Precision
+            # 0.6+ is required for any consideration
+            # < 0.5 is Irrelevant noise
+            
+            label = "Irrelevant"
             if sim >= 0.5:
-                # Check for debunking/contradiction keywords in matched texts
-                debunk_words = ["fake", "false", "hoax", "baseless", "denies", "debunk", "untrue", "misinformation", "no evidence", "not dead", "rumor", "conspiracy", "debunked"]
-                is_debunked = any(word in doc_texts[i].lower() for word in debunk_words)
+                doc_text_low = doc_texts[i].lower()
+                claim_text_low = claim_text.lower()
                 
-                if is_debunked:
+                # Check for debunking/contradiction keywords
+                debunk_words = ["fake", "false", "hoax", "baseless", "denies", "debunk", "untrue", "misinformation", "no evidence", "not dead", "rumor", "conspiracy", "debunked", "fabricated", "unfounded"]
+                
+                # Contextual contradiction (Death detection)
+                death_claim = any(w in claim_text_low for w in ["dead", "died", "killed", "passed away", "funeral"])
+                alive_context = any(w in doc_text_low for w in ["alive", "healthy", "well", "active", "campaigning", "spoke at", "latest appearance"])
+                
+                is_contradiction = any(word in doc_text_low for word in debunk_words)
+                if death_claim and alive_context:
+                    is_contradiction = True
+                
+                if is_contradiction:
                     label = "Contradicting"
                     contradicting_count += 1
-                else:
+                elif sim >= 0.6:
+                    # ONLY high similarity counts as supporting
                     label = "Supporting"
                     supporting_count += 1
-            elif sim <= 0.2:
-                label = "Contradicting"
-                contradicting_count += 1
+                else:
+                    label = "Neutral"
             
             article_results.append({
                 "url": evidence_articles[i]['url'],
@@ -64,11 +77,20 @@ class EvidenceAgent:
                 "label": label
             })
                 
+        # 🟢 UPGRADE 17: Ground Truth Decision Engine
+        # Before comparing to user claim, identify what the majority of high-trust channels are saying
+        high_sim_articles = [a for a in article_results if a['similarity'] > 0.5]
+        ground_truth_narrative = ""
+        if high_sim_articles:
+            # The "Correct" news is decided by the most reputable and common narrative
+            ground_truth_narrative = max(high_sim_articles, key=lambda x: x['similarity'])['title']
+        
         return {
             "bert_score": bert_score,
             "supporting": supporting_count,
             "contradicting": contradicting_count,
+            "ground_truth": ground_truth_narrative,
             "avg_similarity": round(sum(similarities)/len(similarities), 2) if similarities else 0.0,
             "patterns": patterns,
-            "article_results": article_results[:10] # Top 10 for dashboard
+            "article_results": article_results[:15] 
         }

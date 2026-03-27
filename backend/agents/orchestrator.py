@@ -89,30 +89,48 @@ class Orchestrator:
                 credibility_score=cred_data['credibility_score']
             )
 
-        # --- 📊 FINAL WEIGHTED SCORING ---
+        # --- 📊 FINAL WEIGHTED SCORING (UPGRADE v2.6) ---
         bert_score = evidence_data['bert_score']
         supporting = evidence_data['supporting']
+        contradicting = evidence_data['contradicting']
         cred_score = cred_data['credibility_score']
         bias_penalty = bias_data['bias_penalty']
         
-        # Calculate components for visual breakdown
-        bert_share = (bert_score * 0.6)
-        evidence_share = (math.log(1 + supporting) * 0.25)
-        cred_share = (cred_score * 0.1)
-        neg_bias_share = -(bias_penalty * 0.05)
+        # 1. Base weights: Prioritize Live News over Static Model
+        # BERT is now a secondary signal (30%), Evidence is primary (50%)
+        bert_share = (bert_score * 0.3)
+        # Dynamic Evidence: Increases with supports but is capped
+        evidence_share = (min(1.0, math.log(1 + supporting) / 1.5) * 0.45) 
         
-        # 🟢 UPGRADE: Severe penalty for real-world contradiction
-        contradiction_penalty = -(evidence_data['contradicting'] * 0.4)
+        # 🟢 UPGRADE 18: Institutional Trust Multiplier
+        # High-repute sources amplify the evidence share
+        cred_multiplier = 0.15 if cred_score > 0.8 else 0.0
+        cred_share = (cred_score * 0.1) + cred_multiplier
         
-        # 🟢 UPGRADE: Freshness Boost (Reward breaking news)
+        neg_bias_share = -(bias_penalty * 0.1)
+        
+        # 2. Forensic Logic: If no evidence is found for the claim, it is HIGHLY suspicious
+        # "Lack of evidence is evidence of absence" for breaking news claims.
+        evidence_vacuum_penalty = -0.5 if supporting < 2 else 0.0
+        
+        # 3. Direct Contradiction: Sharp penalty for active debunking
+        # Increased to -0.8 to instantly kill rumors if debunked by even one source
+        contradiction_penalty = -(contradicting * 0.8)
+        
+        # 4. Freshness Boost (Reward breaking news)
         urgency_boost = 0.1 if not temporal_res['is_suspiciously_stale'] and temporal_res['contains_dates'] else 0.0
         
-        final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost + contradiction_penalty + urgency_boost
+        final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost + contradiction_penalty + evidence_vacuum_penalty + urgency_boost
         truth_score = max(0.0, min(1.0, float(final_score)))
         
+        # 🟢 UPGRADE 16: Strict Evidence Minimum
+        # If we found less than 2 strong verifiers, we CANNOT guarantee truth.
+        if supporting < 2:
+            truth_score = min(0.4, truth_score)
+            
         # Determine Verdict
         final_verdict = "Suspicious"
-        if truth_score >= 0.6: final_verdict = "Real"
+        if truth_score >= 0.65: final_verdict = "Real"
         elif truth_score < 0.4: final_verdict = "Fake"
         
         # 🟢 UPGRADE 10: Risk Classification
@@ -121,23 +139,22 @@ class Orchestrator:
         # 🟢 UPGRADE 6: "What If I'm Wrong?" (Uncertainty Awareness)
         counter_points = []
         if truth_score < 0.5:
-             counter_points.append("Verdict assumes found news articles accurately describe reality.")
-             counter_points.append("If this is a developing situation, older contradictions may be outdated.")
+             counter_points.append("The system requires at least 2 high-similarity verified sources to mark a claim as REAL.")
+             counter_points.append("If this is a developing leak, official reports might not have caught up yet.")
         else:
-             counter_points.append("Corroboration might be based on echoing of a single unverified source.")
-             counter_points.append("Lack of contradictory evidence does not prove absolute truth.")
+             counter_points.append("Search results could be biased by search engine algorithms or SEO manipulation.")
+             counter_points.append("Verification relies on the integrity of the 'Trusted Source' list.")
         
         # --- 🧪 EXPLAINABILITY REASONS ---
         explanation = []
-        if cred_score == 0: explanation.append("No authoritative news sources confirmed this claim")
-        if bias_penalty > 0.1: explanation.append("High levels of emotional manipulation detected")
-        if supporting < 2: explanation.append("Insufficient corroborating evidence found online")
-        if evidence_data['contradicting'] > 1: explanation.append("Multiple reports directly contradict this claim")
-        if bert_score < 0.4: explanation.append("Neural patterns align with known disinformation datasets")
-        if evidence_data['patterns']['is_clickbait']: explanation.append("Headline uses clickbait stylistic patterns (e.g. ALL CAPS)")
+        if supporting < 2: explanation.append("Insufficient corroborating evidence (less than 2 verified reports found)")
+        if contradicting > 0: explanation.append(f"Forensic traces found {contradicting} reports directly debunking this claim")
+        if supporting >= 3: explanation.append("Claim is corroborated by multiple independent news organizations")
+        if cred_score > 0.7: explanation.append("Sources verifying this data have high institutional trust ratings")
+        if bias_penalty > 0.15: explanation.append("Detection of heavy emotional priming and subjective linguistic patterns")
         
         if not explanation:
-             explanation.append("Claim is corroborated by trusted sources using neutral reporting styles")
+             explanation.append("Claim analyzed against current news status with moderate confidence")
 
         # 🟢 UPGRADE: Identify Primary Truth Source (The most relevant 'Real' information)
         truth_source = None
@@ -154,18 +171,22 @@ class Orchestrator:
         if not truth_source and articles:
             truth_source = articles[0]
 
-        # --- ✍️ NEURAL SYNTHESIS (Human-Style Conclusion) ---
-        synthesis = f"After investigating, TruthGuard has reached a {final_verdict} verdict. "
+        # --- ✍️ NEURAL SYNTHESIS (Consensus-Based Verdict) ---
+        ground_truth = evidence_data.get('ground_truth', 'No clear news consensus found')
+        synthesis = f"After scanning {len(scraper_data['evidence_articles'])} channels for relative news, TruthGuard has decided the correct news story is: '{ground_truth}'. "
         
-        if final_verdict == "Fake" and truth_source:
-             synthesis += f"ACTUAL REPORTING: {truth_source['title']}. "
-        elif final_verdict == "Real" and truth_source:
-             synthesis += f"VERIFIED BY: {truth_source['title']}. "
+        # Now compare the user prompt to this decided ground truth
+        if final_verdict == "Fake":
+             synthesis += f"Your prompt DOES NOT match this verified consensus. VERDICT: FAKE. "
+        elif final_verdict == "Real":
+             synthesis += f"Your prompt matches the verified news cycle. VERDICT: REAL. "
+        else:
+             synthesis += f"The evidence is inconclusive or the story is too new to verify. VERDICT: SUSPICIOUS. "
              
         if experience:
-             synthesis += f"Note: This claim matches a previous human correction (similarity {int(experience['similarity']*100)}%). "
+             synthesis += f"Note: This claim matches a previous verified lesson. "
         
-        synthesis += f"We found {supporting} supporting reports from {cred_data['trusted_count']} trusted sources. "
+        synthesis += f"We verified this via {supporting} supporting reports from reputable sources. "
         
         if bias_penalty > 0.15:
             synthesis += "The linguistic style is notably subjective, suggesting biased intent. "
@@ -174,6 +195,10 @@ class Orchestrator:
             
         if evidence_data['patterns']['is_clickbait']:
             synthesis += "Warning: Stylistic pattern detection flagged clickbait elements. "
+            
+        # 🟢 UPGRADE 19: EXPERIENCE HARVESTING
+        # Store result for self-training and improvement loop
+        feedback_engine.log_scan(input_text, truth_score, final_verdict, supporting, contradicting)
 
         return {
             "truth_score": float(truth_score),

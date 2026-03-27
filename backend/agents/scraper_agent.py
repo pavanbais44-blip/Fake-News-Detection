@@ -7,8 +7,8 @@ class ScraperAgent:
     @staticmethod
     async def extract(urls: List[str]) -> Dict[str, Any]:
         """Processes links in a batch and cleans output for analysis."""
-        # Per requirements, limit results to max 10 articles
-        urls = urls[:10]
+        # Per requirements, limit results to max 15 articles for deeper cross-comparison
+        urls = urls[:15]
         
         # 1. Scraping each URL
         articles = await scraper_tool.extract_batch(urls)

@@ -31,13 +31,13 @@ class WebAgent:
         
         queries = [breaking_query, fact_query, live_query]
         
-        # 3. Call Search for each query
+        # 3. Call Search for each query (Expanding to 10 results per channel)
         all_results = []
         for q in queries:
-             results = search_tool.search_news(q, max_results=5)
+             results = search_tool.search_news(q, max_results=10)
              all_results.extend(results)
              
-        # Unique links only
+        # Unique links only (Aggregating multiple channels)
         unique_results = {r['url']: r for r in all_results}.values()
         
         return {

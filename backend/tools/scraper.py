@@ -6,8 +6,8 @@ from fastapi.concurrency import run_in_threadpool
 class ScraperTool:
     """Tool for clean extraction of news content from URLs."""
     
-    @lru_cache(maxsize=150)
     @staticmethod
+    @lru_cache(maxsize=150)
     def _extract(url: str) -> Dict[str, str]:
         """Synchronous core extraction."""
         try:

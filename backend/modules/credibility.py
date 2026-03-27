@@ -5,8 +5,12 @@ class CredibilityModule:
     """Module for measuring the reputation and domain trustworthiness of news evidence."""
     
     TRUSTED_DOMAINS = [
-        "bbc.com", "reuters.com", "apnews.com", "ntymes.com", "theguardian.com", 
-        "npr.org", "wsj.com", "bloomberg.com", "npr.com", "factcheck.org", "snopes.com"
+        "bbc.com", "reuters.com", "apnews.com", "nytimes.com", "theguardian.com", 
+        "npr.org", "wsj.com", "bloomberg.com", "npr.com", "factcheck.org", "snopes.com",
+        "cnn.com", "aljazeera.com", "washingtontimes.com", "politico.com", "forbes.com",
+        "timesofindia.indiatimes.com", "thehindu.com", "ndtv.com", "hindustantimes.com",
+        "indianexpress.com", "livemint.com", "business-standard.com", "economictimes.indiatimes.com",
+        "reuters.in", "firstpost.com", "thequint.com", "scroll.in"
     ]
 
     @staticmethod

@@ -20,7 +20,7 @@ class BERTModel:
             print(f"[ERROR] BERT Load Failed: {e}")
 
     def predict(self, text: str):
-        if not self.pipe: return {"label": "Error", "score": 0.5}
+        if not self.pipe: return {"prediction": "Error", "score": 0.5}
         # BERT limit is 512 tokens
         res = self.pipe(text[:512])[0]
         
