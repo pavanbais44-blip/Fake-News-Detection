@@ -1,0 +1,21 @@
+version: '3.8'
+
+# 🛠️ TruthGuard 2.5: Developer Hot-Reload Cluster
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+services:
+  truthguard-backend:
+    volumes:
+      - ./backend:/app
+    command: ["uv", "run", "python", "app.py"] # Uses 'reload=True' defined in app.py
+
+  truthguard-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host"]

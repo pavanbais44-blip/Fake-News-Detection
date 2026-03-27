@@ -1,16 +1,36 @@
-# React + Vite
+# 🔬 TruthGuard Frontend: The Forensic Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the interface for researchers to interact with the TruthGuard Agentic Core. It is designed to provide maximum transparency during the misinformation investigation process.
 
-Currently, two official plugins are available:
+## 🌟 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🚦 1. Real-Time Investigation Trace
+Watch each agent (Claim, Web, Scraper, Evidence, Bias, Reflection) execute in real-time. The dashboard synchronizes with the backend's parallel processing states.
 
-## React Compiler
+### ⚖️ 2. Neural Debate Arena
+Visualizing the internal conflict:
+*   **Agent ALPHA**: Supporting arguments derived from evidence.
+*   **Agent OMEGA**: Disinformation/Propaganda patterns detected.
+*   **Chief Justice**: The final reasoned verdict.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🛡️ 3. Hallucination Guard
+A confidence-aware indicator that flags when the AI doesn't have enough data to be certain, preventing "certainty bias" in uncertain situations.
 
-## Expanding the ESLint configuration
+### 🧬 4. Atomic Claim Breakdown
+Every paragraph is split into individual claims, showing you which specific part of a story is true and which is false.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Getting Started
+
+1.  **Dependencies**: `npm install`
+2.  **Dev Mode**: `npm run dev`
+3.  **Production Build**: `npm run build`
+
+## 🛠️ Configuration
+The API connection is managed in `src/services/api.js`. Ensure the backend is running at `http://localhost:8000`.
+
+## 🎨 Theme
+The dashboard uses a **Clinical Dark Industrial** aesthetic:
+*   **Real**: Emerald (#10b981)
+*   **Fake**: Rose (#f43f5e)
+*   **Accent**: Indigo/Violet Gradient
+*   **Glassmorphism**: UI elements use heavy blur (20px) for a premium, forensic feel.

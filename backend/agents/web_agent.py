@@ -16,20 +16,20 @@ class WebAgent:
              # Expanding vague claim "India deal" → "India international trade deal news"
              working_keywords.extend(["official report", "fact check", "investigation"])
         
-        # 1. Base Query from keywords
-        base_query = " ".join(entities[:3] + working_keywords[:2]) + " official news"
+        # 1. Breaking News Query
+        breaking_query = " ".join(entities[:3] + working_keywords[:1]) + " breaking news live updates"
         
-        # ... queries
-        fact_query = " ".join(entities[:2]) + " fact check"
+        # 2. Fact Check Query
+        fact_query = " ".join(entities[:2]) + " fact check latest"
 
-        # 3. Multi-language (Hindi/Regional) Query
-        lang_query = " ".join(entities[:2]) + " hindi news report samachar"
+        # 3. Regional / Minute-by-minute Context
+        live_query = " ".join(entities[:2]) + " news current status right now"
         
         # Add retrying signal if needed
         if retrying:
-             base_query += " verified source report"
+             breaking_query += " verified official report"
         
-        queries = [base_query, fact_query, lang_query]
+        queries = [breaking_query, fact_query, live_query]
         
         # 3. Call Search for each query
         all_results = []

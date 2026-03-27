@@ -13,11 +13,12 @@ class SearchTool:
         # using @lru_cache on staticmethod works for query string.
         try:
             with DDGS() as ddgs:
-                results = ddgs.text(query, max_results=max_results)
+                # 🟢 CRITICAL: timelimit='d' ensures results from the last 24 hours ONLY
+                results = ddgs.news(query, max_results=max_results, timelimit='d')
                 output = [
                     {
                         "title": r.get('title', ''), 
-                        "url": r.get('href', ''), 
+                        "url": r.get('url', r.get('href', '')), 
                         "body": r.get('body', '')[:200] + "..."
                     } for r in results
                 ] if results else []

@@ -152,20 +152,38 @@ function App() {
                <div className="report-id">REPORT ID: #{Math.random().toString(36).substring(7).toUpperCase()} | <span className="h-guard">HALLUCINATION GUARD: {result.confidence === 'high' ? 'PASSED' : 'CAUTION'}</span></div>
             </div>
 
-            {/* MAIN VERDICT CARD */}
-            <div className={`verdict-banner ${result.final_verdict.toLowerCase()}`}>
-               <div className="v-label">NEURAL VERDICT - {result.risk_level}</div>
-               <div className="v-status">{result.final_verdict.toUpperCase()}</div>
-               <div className="v-trust">
-                  <span>TRUTH SCORE: {Math.round(result.truth_score * 100)}%</span>
-                  <div className="trust-meter"><div className="fill" style={{ width: `${result.truth_score * 100}%` }}></div></div>
-               </div>
-            </div>
+             {/* MAIN VERDICT CARD */}
+             <div className={`verdict-banner ${result.final_verdict.toLowerCase()}`}>
+                <div className="v-label">
+                  NEURAL VERDICT - {result.risk_level}
+                  {result.temporal && !result.temporal.is_suspiciously_stale && (
+                    <span className="live-badge-glow">● LIVE NEWS INDEXED</span>
+                  )}
+                </div>
+                <div className="v-status">{result.final_verdict.toUpperCase()}</div>
+                <div className="v-trust">
+                   <span>TRUTH SCORE: {Math.round(result.truth_score * 100)}%</span>
+                   <div className="trust-meter"><div className="fill" style={{ width: `${result.truth_score * 100}%` }}></div></div>
+                </div>
+             </div>
 
             <div className="insight-section">
                <h3>Synthesis Narrative</h3>
                <p className="narrative-text">"{result.neural_synthesis}"</p>
             </div>
+
+            {/* 🟢 TOP TRUTH SOURCE (New Focal Point) */}
+            {result.truth_source && (
+               <div className={`truth-source-callout ${result.truth_source.label.toLowerCase()}`}>
+                  <div className="callout-header">
+                     <span className="source-type-badge">{result.final_verdict === 'Fake' ? 'CORRECTION SOURCE' : 'PRIMARY VERIFIER'}</span>
+                     <span className="source-domain-inline">{new URL(result.truth_source.url).hostname.replace('www.', '')}</span>
+                  </div>
+                  <h4>{result.truth_source.title}</h4>
+                  <p>{result.truth_source.snippet}</p>
+                  <a href={result.truth_source.url} target="_blank" rel="noreferrer" className="truth-link">READ FULL REPORT ↗</a>
+               </div>
+            )}
 
             {/* NEURAL DEBATE ARENA (UPGRADE 1) */}
             <div className="debate-arena">

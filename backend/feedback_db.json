@@ -8,5 +8,15 @@
         "text": "Shocking revelation! narendra modi is died is actually a secret agenda.",
         "corrected_label": "Fake",
         "timestamp": "3a7e7b4a"
+    },
+    {
+        "text": "donald trump it dead.",
+        "corrected_label": "Fake",
+        "timestamp": "7256cb58"
+    },
+    {
+        "text": "\nTwo pilots killed after Air Canada jet collision at LaGuardia in New York",
+        "corrected_label": "Real",
+        "timestamp": "9588f843"
     }
 ]

@@ -12,9 +12,13 @@ services:
     volumes:
       # 💾 Neural Experience Persistence (Human corrections saved here)
       - ./backend/feedback_db.json:/app/feedback_db.json
+      # 🧠 Cache Transformers and NLTK to prevent re-downloads
+      - bert_models:/home/tguser/.cache/huggingface
+      - nltk_data:/home/tguser/nltk_data
     environment:
       - PYTHONUNBUFFERED=1
       - ENV=production
+      - API_URL=http://localhost:8000
     restart: always
 
   # 📑 TruthGuard Forensic Lab Frontend
@@ -30,6 +34,6 @@ services:
     restart: always
 
 volumes:
-  # Named volumes for caching transformer weights
+  # Named volumes for caching transformer weights across restarts
   bert_models:
   nltk_data:

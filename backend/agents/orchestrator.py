@@ -101,7 +101,13 @@ class Orchestrator:
         cred_share = (cred_score * 0.1)
         neg_bias_share = -(bias_penalty * 0.05)
         
-        final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost
+        # 🟢 UPGRADE: Severe penalty for real-world contradiction
+        contradiction_penalty = -(evidence_data['contradicting'] * 0.4)
+        
+        # 🟢 UPGRADE: Freshness Boost (Reward breaking news)
+        urgency_boost = 0.1 if not temporal_res['is_suspiciously_stale'] and temporal_res['contains_dates'] else 0.0
+        
+        final_score = bert_share + evidence_share + cred_share + neg_bias_share + exp_boost + contradiction_penalty + urgency_boost
         truth_score = max(0.0, min(1.0, float(final_score)))
         
         # Determine Verdict
@@ -133,10 +139,32 @@ class Orchestrator:
         if not explanation:
              explanation.append("Claim is corroborated by trusted sources using neutral reporting styles")
 
+        # 🟢 UPGRADE: Identify Primary Truth Source (The most relevant 'Real' information)
+        truth_source = None
+        articles = evidence_data.get('article_results', [])
+        if final_verdict == "Fake":
+            contradictors = [a for a in articles if a['label'] == "Contradicting"]
+            if contradictors:
+                truth_source = max(contradictors, key=lambda x: x['similarity'])
+        else:
+            supporters = [a for a in articles if a['label'] == "Supporting"]
+            if supporters:
+                truth_source = max(supporters, key=lambda x: x['similarity'])
+        
+        if not truth_source and articles:
+            truth_source = articles[0]
+
         # --- ✍️ NEURAL SYNTHESIS (Human-Style Conclusion) ---
         synthesis = f"After investigating, TruthGuard has reached a {final_verdict} verdict. "
+        
+        if final_verdict == "Fake" and truth_source:
+             synthesis += f"ACTUAL REPORTING: {truth_source['title']}. "
+        elif final_verdict == "Real" and truth_source:
+             synthesis += f"VERIFIED BY: {truth_source['title']}. "
+             
         if experience:
              synthesis += f"Note: This claim matches a previous human correction (similarity {int(experience['similarity']*100)}%). "
+        
         synthesis += f"We found {supporting} supporting reports from {cred_data['trusted_count']} trusted sources. "
         
         if bias_penalty > 0.15:
@@ -145,7 +173,7 @@ class Orchestrator:
             synthesis += "The language is measured and objective. "
             
         if evidence_data['patterns']['is_clickbait']:
-            synthesis += "Warning: Stylistic pattern detection flagged clickbait elements (e.g. excessive punctuation). "
+            synthesis += "Warning: Stylistic pattern detection flagged clickbait elements. "
 
         return {
             "truth_score": float(truth_score),
@@ -154,6 +182,7 @@ class Orchestrator:
             "risk_level": risk_level,
             "explanation": explanation[:3],
             "neural_synthesis": synthesis,
+            "truth_source": truth_source,
             "debate": debate_data,
             "temporal": temporal_res,
             "counter_points": counter_points,

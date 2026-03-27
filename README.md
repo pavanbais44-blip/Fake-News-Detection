@@ -1,11 +1,11 @@
-# 🛡️ TruthGuard 2.0: Agentic Misinformation Forensics Lab
+# 🛡️ TruthGuard 2.5: Agentic Real-Time Misinformation Forensics Lab
 
-![TruthGuard Banner](https://img.shields.io/badge/Status-Production--Ready-brightgreen) ![License](https://img.shields.io/badge/License-MIT-green) ![Engine](https://img.shields.io/badge/Architecture-Multi--Agent_System-blueviolet) ![Performance](https://img.shields.io/badge/Speed-Optimized_via_uv-orange)
+![TruthGuard Banner](https://img.shields.io/badge/Status-Hardened--Production-brightgreen) ![License](https://img.shields.io/badge/License-MIT-green) ![Engine](https://img.shields.io/badge/Architecture-Multi--Agent_System-blueviolet) ![Performance](https://img.shields.io/badge/Speed-Optimized_via_uv-orange)
 
 ## 📌 Project Overview
-TruthGuard 2.0 is a decentralized, **Multi-Agent Forensic Laboratory** designed for the professional-grade detection and analysis of digital disinformation. Unlike standard AI classifiers, TruthGuard 2.0 doesn't just "guess"; it **investigates**. 
+TruthGuard 2.5 is a decentralized, **Multi-Agent Forensic Laboratory** designed for the professional-grade detection and analysis of digital disinformation. Unlike standard AI classifiers, TruthGuard 2.5 doesn't just "guess"; it **investigates the live truth** in real-time.
 
-The system employs a team of specialized AI agents that collaborate, debate, and cross-reference live global evidence to reach a high-fidelity "Neural Verdict." It is built to detect not just fake news, but also **stale news recycled as current events**, **stylistic manipulation**, and **contextual hallucinations**.
+The system employs a team of specialized AI agents that collaborate, debate, and cross-reference **minute-by-minute global news** to reach a high-fidelity "Neural Verdict." Version 2.5 introduces **Live News Indexing**, **SSRF-Hardened Security**, and an automated **Fact-Check Correction Engine**.
 
 ---
 
@@ -22,8 +22,11 @@ Instead of analyzing a broad paragraph, the `ClaimAgent` breaks complex text int
 ### 🕰️ 3. Temporal Awareness & Staleness Detection
 Fake news often uses real footage or articles from years ago and presents them as "Breaking News." Our `TemporalModule` detects date-stamps in evidence and flags news older than 2 years as **"Suspiciously Stale."**
 
-### 🧪 4. Synthetic Misinformation Lab (RESEARCH ONLY)
-A built-in **Disinformation Generator** allows researchers to transform real news into "Propaganda-styled" samples to test the system's pattern-recognition robustness.
+### 🔬 5. Minute-by-Minute Fact-Check (NEW v2.5)
+TruthGuard now queries the global **live news index** with a 24-hour strict filter. This allows the system to detect breaking news updates, live conference results, and ongoing disasters as they happen.
+
+### ⚖️ 6. Automated Truth Correction (The Fact-Report)
+When a "Fake" verdict is reached, the system automatically identifies the most reliable **Correction Source** from verified news organizations and features it at the top of the report to directly replace disinformation with facts.
 
 ---
 

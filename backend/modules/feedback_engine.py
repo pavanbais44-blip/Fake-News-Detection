@@ -34,13 +34,14 @@ class FeedbackEngine:
             return None
         
         past_texts = [h['text'] for h in self.history]
-        vectorizer = TfidfVectorizer().fit(past_texts + [current_text])
-        vectors = vectorizer.transform(past_texts + [current_text])
+        vectorizer = TfidfVectorizer()
+        # Transform both past and current in one step
+        vectors = vectorizer.fit_transform(past_texts + [current_text])
         
-        # Compare last vector (current) with all previous
-        similarities = cosine_similarity(vectors[-1], vectors[:-1])[0]
+        # Compare current vector (the last one) with all previous ones
+        similarities = cosine_similarity(vectors[-1:], vectors[:-1])[0]
         
-        if not len(similarities): return None
+        if len(similarities) == 0: return None
         
         max_idx = similarities.argmax()
         max_sim = similarities[max_idx]

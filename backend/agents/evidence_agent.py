@@ -42,8 +42,16 @@ class EvidenceAgent:
             # Create a label based on thresholds
             label = "Neutral"
             if sim >= 0.5:
-                label = "Supporting"
-                supporting_count += 1
+                # Check for debunking/contradiction keywords in matched texts
+                debunk_words = ["fake", "false", "hoax", "baseless", "denies", "debunk", "untrue", "misinformation", "no evidence", "not dead", "rumor", "conspiracy", "debunked"]
+                is_debunked = any(word in doc_texts[i].lower() for word in debunk_words)
+                
+                if is_debunked:
+                    label = "Contradicting"
+                    contradicting_count += 1
+                else:
+                    label = "Supporting"
+                    supporting_count += 1
             elif sim <= 0.2:
                 label = "Contradicting"
                 contradicting_count += 1

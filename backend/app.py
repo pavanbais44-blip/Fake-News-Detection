@@ -13,11 +13,27 @@ app = FastAPI(title="TruthGuard Agentic Core 2.0", description="Upgraded Decentr
 # 🏛️ CORS SETUP (HARDENED)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:80", "http://127.0.0.1:80"], 
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"], 
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+# 🛡️ SECURITY HEADERS MIDDLEWARE
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+def validate_url(url: str):
+    """Prevents SSRF by blocking internal/loopback IP requests."""
+    forbidden = ["localhost", "127.0.0.1", "0.0.0.0", "169.254.169.254"]
+    if any(f in url.lower() for f in forbidden):
+        raise HTTPException(status_code=400, detail="Security risk: Access to internal metadata/localhost blocked.")
 
 # 🚦 RATE LIMITER
 rate_limit_records = defaultdict(list)
@@ -85,6 +101,7 @@ async def analyze_claim(request: AnalyzeRequest):
     # 🔗 URL to Text Conversion (if needed)
     target_text = request.text
     if request.url and not target_text:
+         validate_url(request.url)
          try:
              res = await run_in_threadpool(scraper_tool._extract, request.url)
              target_text = res.get('text', '')
