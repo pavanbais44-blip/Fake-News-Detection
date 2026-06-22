@@ -163,5 +163,100 @@
         "text": "James Webb Space Telescope releases its first full-color images.",
         "corrected_label": "Real",
         "timestamp": "3205c007"
+    },
+    {
+        "text": "narendra modi is the prime minister of india",
+        "corrected_label": "Real",
+        "timestamp": "03fb1260"
+    },
+    {
+        "text": "Trump killed with a missile up his butt.",
+        "corrected_label": "Real",
+        "timestamp": "5a095e38"
+    },
+    {
+        "text": "NASA's Perseverance rover successfully lands on Mars.",
+        "corrected_label": "Real",
+        "timestamp": "e33b057d"
+    },
+    {
+        "text": "Queen Elizabeth II passed away at Balmoral Castle on Sept 8, 2022.",
+        "corrected_label": "Real",
+        "timestamp": "ea215e7a"
+    },
+    {
+        "text": "Lionel Messi wins his 8th Ballon d'Or in Paris.",
+        "corrected_label": "Real",
+        "timestamp": "72ccdcff"
+    },
+    {
+        "text": "Scientists find living dinosaurs on a secret island in Brazil.",
+        "corrected_label": "Fake",
+        "timestamp": "e5f095d8"
+    },
+    {
+        "text": "The Titanic has been found in the North Atlantic.",
+        "corrected_label": "Real",
+        "timestamp": "5bec0ae8"
+    },
+    {
+        "text": "Elon Musk is buying the moon for $100 trillion.",
+        "corrected_label": "Fake",
+        "timestamp": "4a09bab1"
+    },
+    {
+        "text": "Microsoft acquires Activision Blizzard for $68.7 billion.",
+        "corrected_label": "Real",
+        "timestamp": "9e60aacd"
+    },
+    {
+        "text": "Walking on grass in the morning prevents blindness.",
+        "corrected_label": "Fake",
+        "timestamp": "d6876da7"
+    },
+    {
+        "text": "James Webb Space Telescope releases its first full-color images.",
+        "corrected_label": "Real",
+        "timestamp": "a1d71100"
+    },
+    {
+        "text": "Drinking sea water increases IQ by 30 points.",
+        "corrected_label": "Fake",
+        "timestamp": "e7bdcf65"
+    },
+    {
+        "text": "Bitcoin reaches an all-time high of $1 million.",
+        "corrected_label": "Fake",
+        "timestamp": "0840c912"
+    },
+    {
+        "text": "The 2024 Olympic Games are held in Paris, France.",
+        "corrected_label": "Real",
+        "timestamp": "004e8401"
+    },
+    {
+        "text": "Cats can talk but they choose not to because they are lazy.",
+        "corrected_label": "Fake",
+        "timestamp": "81b23a65"
+    },
+    {
+        "text": "NASA's Perseverance rover successfully lands on Mars.",
+        "corrected_label": "Real",
+        "timestamp": "fd4ce9bc"
+    },
+    {
+        "text": "Queen Elizabeth II passed away at Balmoral Castle on Sept 8, 2022.",
+        "corrected_label": "Real",
+        "timestamp": "f4a1c50b"
+    },
+    {
+        "text": "itm is the best college of vadodara",
+        "corrected_label": "Fake",
+        "timestamp": "85805e2b"
+    },
+    {
+        "text": "narendra modi prime minister of india\n",
+        "corrected_label": "Real",
+        "timestamp": "2e85bdd2"
     }
 ]

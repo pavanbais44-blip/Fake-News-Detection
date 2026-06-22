@@ -18,7 +18,7 @@ class Orchestrator:
     def __init__(self):
         self.max_retries = 1 
 
-    async def analyze(self, input_text: str) -> Dict[str, Any]:
+    async def analyze(self, input_text: str, quick: bool = False) -> Dict[str, Any]:
         """Executes the concurrent multi-agent workflow with parallel processing."""
         
         # 🟢 EXPERIENCE CHECK (Learn from past mistakes)
@@ -32,7 +32,7 @@ class Orchestrator:
         claim_data = await ClaimAgent.extract(input_text)
         
         # 🟢 PHASE 2: Concurrent Execution
-        search_task = WebAgent.get_links(keywords=claim_data['keywords'], entities=claim_data['entities'])
+        search_task = WebAgent.get_links(keywords=claim_data['keywords'], entities=claim_data['entities'], quick=quick)
         bias_task = BiasAgent.analyze(input_text)
         
         search_data, bias_data = await asyncio.gather(search_task, bias_task)
@@ -41,8 +41,20 @@ class Orchestrator:
         urls = [r['url'] for r in search_data.get('results', [])]
         scraper_data = await ScraperAgent.extract(urls)
         
-        # 🟢 PHASE 4: Evidence & Reputation Analysis
-        evidence_task = EvidenceAgent.analyze(input_text, scraper_data['evidence_articles'])
+        # 🟢 PHASE 4: Evidence & Reputation Analysis (With Snippet Fallback)
+        articles_to_analyze = scraper_data['evidence_articles']
+        if not articles_to_analyze:
+             # If scraping failed for all URLs, use the search snippets as a fallback
+             articles_to_analyze = [
+                 {"title": r['title'], "text": r['body'], "url": r['url']} 
+                 for r in search_data.get('results', [])
+             ]
+        
+        evidence_task = EvidenceAgent.analyze(
+            input_text, 
+            articles_to_analyze, 
+            entities=claim_data['entities']
+        )
         cred_task = asyncio.to_thread(credibility_module.calculate, urls) 
         
         evidence_data, cred_data = await asyncio.gather(evidence_task, cred_task)
@@ -73,7 +85,8 @@ class Orchestrator:
             new_search_data = await WebAgent.get_links(
                 keywords=claim_data['keywords'], 
                 entities=claim_data['entities'], 
-                retrying=True
+                retrying=True,
+                quick=quick
             )
             new_urls = [r['url'] for r in new_search_data.get('results', [])]
             new_scraper_data = await ScraperAgent.extract(new_urls)
@@ -102,9 +115,9 @@ class Orchestrator:
         temporal_drift_score = 1.0 if temporal_res['is_suspiciously_stale'] else 0.0
         bias_score = bias_data['subjectivity']
         
-        # Base Weights
-        w_ml = 0.5
-        w_cred = 0.3
+        # Base Weights (Prioritizing Search Evidence over tiny BERT model)
+        w_ml = 0.35
+        w_cred = 0.45
         w_temp = 0.1
         w_bias = 0.1
         
@@ -127,15 +140,17 @@ class Orchestrator:
 
         
         # 🟢 UPGRADE 16: Strict Evidence Minimum Verification
-        # If we found no strong verifiers, the claim is highly likely to be misinformation.
-        if supporting == 0:
-             overall_fake_score = max(0.75, overall_fake_score + 0.45) # Very Strong shift to Fake
+        # If no sources match, we stay cautious (Suspicious) but don't force 'Fake' unless debunked.
+        if supporting == 0 and contradicting == 0:
+             overall_fake_score += 0.15 # Shift toward Suspicious/Fake
+        elif supporting == 0 and contradicting > 0:
+             overall_fake_score += 0.45 # Confirmed Fake via debunking
         elif supporting < 2:
-             overall_fake_score = max(0.65, overall_fake_score + 0.25) # Moderate shift to Fake
+             overall_fake_score += 0.05 # Minor shift if low evidence
              
         # Direct Contradiction: Sharp penalty for active debunking
         if contradicting > 0:
-             overall_fake_score = min(1.0, overall_fake_score + 0.35)
+             overall_fake_score += 0.35
              
         # Normalize strictly to 0.0-1.0
         overall_fake_score = max(0.0, min(1.0, float(overall_fake_score)))

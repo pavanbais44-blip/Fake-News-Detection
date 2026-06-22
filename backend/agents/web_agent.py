@@ -6,7 +6,7 @@ class WebAgent:
     """Agent responsible for multi-query news search and evidence gathering."""
     
     @staticmethod
-    async def get_links(keywords: List[str], entities: List[str], retrying: bool = False) -> Dict[str, Any]:
+    async def get_links(keywords: List[str], entities: List[str], retrying: bool = False, quick: bool = False) -> Dict[str, Any]:
         """Generates 2–3 optimized queries and calls the search tool."""
         
         # 🟢 UPGRADE 11: Context Expansion (Smart Query Expansion)
@@ -29,7 +29,11 @@ class WebAgent:
         if retrying:
              breaking_query += " verified official report"
         
-        queries = [breaking_query, fact_query, live_query]
+        # QUICK SCAN: Only use the primary breaking query
+        if quick:
+            queries = [breaking_query]
+        else:
+            queries = [breaking_query, fact_query, live_query]
         
         # 3. Call Search for each query (Expanding to 10 results per channel)
         all_results = []

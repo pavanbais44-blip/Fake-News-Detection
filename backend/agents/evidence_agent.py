@@ -35,6 +35,8 @@ class BERTModel:
         # We return the confidence that the article is REAL
         real_score = res['score'] if prediction_label == "Real" else 1 - res['score']
         
+        print(f"[ML] BERT Prediction: {prediction_label} (Raw Score: {res['score']:.4f})")
+        
         return {
             "prediction": prediction_label,
             "score": real_score # 0.0 to 1.0 (Higher is REAL)
@@ -74,8 +76,10 @@ class EvidenceAgent:
             all_text = [claim] + doc_list
             tfidf_matrix = vectorizer.fit_transform(all_text)
             all_sims = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])[0]
+            print(f"[DEBUG] Similarities: {[round(float(s), 3) for s in all_sims]}")
             return [float(s) for s in all_sims]
-        except:
+        except Exception as e:
+            print(f"[DEBUG] Similarity Error: {e}")
             return [0.0] * len(doc_list)
 
     @staticmethod
@@ -92,7 +96,7 @@ class EvidenceAgent:
         }
 
     @staticmethod
-    async def analyze(claim_text: str, evidence_articles: List[Dict[str, str]]) -> Dict[str, Any]:
+    async def analyze(claim_text: str, evidence_articles: List[Dict[str, str]], entities: List[str] = None) -> Dict[str, Any]:
         """Runs the BERT classification and Similarity Utility concurrently."""
         
         # 1. Base BERT Classification
@@ -111,8 +115,8 @@ class EvidenceAgent:
         article_results = []
         
         for i, sim in enumerate(similarities):
-            # 🟢 UPGRADE 15: Forensic Precision
-            if sim < 0.5:
+            # 🟢 UPGRADE 15: Forensic Precision (Relaxed Threshold)
+            if sim < 0.15:
                 continue
                 
             doc_text_low = doc_texts[i].lower()
@@ -129,10 +133,19 @@ class EvidenceAgent:
             if death_claim and alive_context:
                 is_contradiction = True
             
-            if is_contradiction:
+            # 🟢 UPGRADE: Entity Awareness (Avoid 'Saturn vs Neptune' drift)
+            entity_match = True
+            if entities:
+                # If a specific entity from the claim is MISSING in the article, it's NOT a support.
+                # Use a small subset (top 3) to avoid over-filtering.
+                top_entities = [e.lower() for e in entities[:3]]
+                if not any(e in doc_text_low for e in top_entities):
+                    entity_match = False
+
+            if is_contradiction and sim > 0.4:
                 label = "Contradicting"
                 contradicting_count += 1
-            elif sim >= 0.6:
+            elif sim >= 0.25 and entity_match:
                 label = "Supporting"
                 supporting_count += 1
             else:
@@ -151,20 +164,16 @@ class EvidenceAgent:
                 "ml_fake_score": round(ml_fake_score, 2)
             })
                 
-        high_sim_articles = [a for a in article_results if a['similarity'] > 0.5]
-        
-        # Calculate overall ML Fake score across all relevant gathered evidence
-        # 🟢 UPGRADE: If no evidence is found at all, we treat it as suspicious (0.7) rather than 0.0
+        # 🟢 UPGRADE: If no evidence is found at all, we treat it as Neutral (0.5)
         if not article_results:
-            avg_ml_fake = 0.7 
+            avg_ml_fake = 0.5 
         else:
             avg_ml_fake = sum(a['ml_fake_score'] for a in article_results) / len(article_results)
 
-
+        # The "Correct" news is decided by the most relevant narrative found
         ground_truth_narrative = ""
-        if high_sim_articles:
-            # The "Correct" news is decided by the most reputable and common narrative
-            ground_truth_narrative = max(high_sim_articles, key=lambda x: x['similarity'])['title']
+        if article_results:
+            ground_truth_narrative = max(article_results, key=lambda x: x['similarity'])['title']
         
         return {
             "bert_score": bert_score,

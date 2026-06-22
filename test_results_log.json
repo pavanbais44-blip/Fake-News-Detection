@@ -3,105 +3,91 @@
         "prompt": "NASA's Perseverance rover successfully lands on Mars.",
         "target": "Real",
         "actual": "Suspicious",
-        "score": 0.4,
-        "learned": true
-    },
-    {
-        "prompt": "Pope Francis endorses Donald Trump for President.",
-        "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Queen Elizabeth II passed away at Balmoral Castle on Sept 8, 2022.",
         "target": "Real",
         "actual": "Suspicious",
-        "score": 0.4,
-        "learned": true
-    },
-    {
-        "prompt": "Drinking lemon juice in hot water cures COVID-19 in 24 hours.",
-        "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Lionel Messi wins his 8th Ballon d'Or in Paris.",
         "target": "Real",
-        "actual": "Fake",
-        "score": 0.3000631332397461,
+        "actual": "Suspicious",
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Scientists find living dinosaurs on a secret island in Brazil.",
         "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "actual": "Fake",
+        "score": 0.0,
         "learned": true
     },
     {
         "prompt": "The Titanic has been found in the North Atlantic.",
         "target": "Real",
         "actual": "Suspicious",
-        "score": 0.4,
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Elon Musk is buying the moon for $100 trillion.",
         "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "actual": "Fake",
+        "score": 0.02499999999999991,
         "learned": true
     },
     {
         "prompt": "Microsoft acquires Activision Blizzard for $68.7 billion.",
         "target": "Real",
         "actual": "Suspicious",
-        "score": 0.4,
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Walking on grass in the morning prevents blindness.",
         "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "actual": "Fake",
+        "score": 0.0,
         "learned": true
     },
     {
         "prompt": "James Webb Space Telescope releases its first full-color images.",
         "target": "Real",
         "actual": "Suspicious",
-        "score": 0.4,
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Drinking sea water increases IQ by 30 points.",
         "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "actual": "Fake",
+        "score": 0.0,
         "learned": true
     },
     {
         "prompt": "Bitcoin reaches an all-time high of $1 million.",
         "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "actual": "Fake",
+        "score": 0.02499999999999991,
         "learned": true
     },
     {
         "prompt": "The 2024 Olympic Games are held in Paris, France.",
         "target": "Real",
         "actual": "Suspicious",
-        "score": 0.4,
+        "score": 0.5,
         "learned": true
     },
     {
         "prompt": "Cats can talk but they choose not to because they are lazy.",
         "target": "Fake",
-        "actual": "Suspicious",
-        "score": 0.4,
+        "actual": "Fake",
+        "score": 0.0,
         "learned": true
     }
 ]

@@ -47,7 +47,7 @@ function App() {
     setFeedbackSent(false);
 
     try {
-      const data = await analyzeNews(inputText, inputType);
+      const data = await analyzeNews(inputText, inputType, !deepAnalysis);
       setHistory(prev => [{ text: inputText.substring(0, 30) + "...", verdict: data.final_verdict, date: new Date().toLocaleTimeString() }, ...prev]);
       setResult(data);
       setLoading(false);

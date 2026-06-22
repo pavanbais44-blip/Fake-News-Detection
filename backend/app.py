@@ -44,6 +44,7 @@ async def rate_limit(request: Request, call_next):
 class AnalyzeRequest(BaseModel):
     text: Optional[str] = Field(None, max_length=5000)
     url: Optional[str] = Field(None, max_length=500)
+    quick: bool = False
 
 # 🧠 GLOBAL ORCHESTRATOR INSTANCE
 orch = Orchestrator()
@@ -111,7 +112,7 @@ async def analyze_claim(request: AnalyzeRequest):
 
     # 🚀 Start Multi-Agent Search, Scrape & Classification
     try:
-        result = await orch.analyze(target_text)
+        result = await orch.analyze(target_text, quick=request.quick)
         if not result or 'final_verdict' not in result:
              raise Exception("Empty or malformed result from Agentive Orchestrator.")
         return result

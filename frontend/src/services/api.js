@@ -1,9 +1,10 @@
 const API_BASE_URL = 'http://localhost:8000';
 
-export const analyzeNews = async (text, type = 'text') => {
+export const analyzeNews = async (text, type = 'text', quick = false) => {
   const payload = {
     text: type === 'text' ? text : null,
-    url: type === 'url' ? text : null
+    url: type === 'url' ? text : null,
+    quick: quick
   };
 
   try {
